@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organigramme Club Badminton</title>
+    <style>
+        :root {
+            --primary-green: #2ecc71;
+            --dark-green: #27ae60;
+            --court-green: #1a472a; /* Vert terrain */
+            --shuttle-white: #ffffff;
+            --line-color: #ecf0f1;
+            --text-main: #2c3e50;
+            --bg-color: #f7f9fc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--court-green);
+            color: var(--shuttle-white);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+            height: calc(100vh - 80px);
+            box-sizing: border-box;
+        }
+
+        /* Sidebar Controls */
+        .sidebar {
+            width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            overflow-y: auto;
+        }
+
+        .control-group {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        
+        .control-group:last-child {
+            border-bottom: none;
+        }
+
+        .control-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--court-green);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary-green);
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--dark-green);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-green);
+        }
+
+        button.secondary {
+            background-color: #95a5a6;
+        }
+        button.secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        /* Main Chart Area */
+        .chart-area {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 30px;
+            overflow-y: auto;
+            position: relative;
+            background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Bubble Section */
+        .section-bubble {
+            border: 2px solid var(--primary-green);
+            border-radius: 20px;
+            padding: 40px 20px 20px 20px;
+            margin-bottom: 30px;
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.1);
+        }
+
+        .section-title {
+            position: absolute;
+            top: -15px;
+            left: 30px;
+            background-color: var(--primary-green);
+            color: white;
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .level-row {
+            margin-bottom: 20px;
+            position: relative;
+            border-bottom: 1px solid #eee;
+            padding: 15px;
+            background: transparent;
+        }
+
+        .level-row:last-child {
+            border-bottom: none;
+        }
+
+        .level-header {
+            display: none; /* Masquer les numéros de ligne */
+        }
+
+        .members-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding-top: 0;
+            padding-left: 0;
+            min-height: 100px;
+            align-items: center;
+        }
+        .members-container.drag-over {
+            background-color: rgba(46, 204, 113, 0.1);
+            border: 2px dashed var(--primary-green);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        /* Member Card */
+        .member-card {
+            background: white;
+            border: 1px solid #e1e1e1;
+            border-bottom: 5px solid var(--primary-green);
+            border-radius: 8px;
+            width: auto;
+            min-width: 120px;
+            max-width: 100%;
+            padding: 10px 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .member-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .member-actions {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            display: inline-flex;
+            gap: 6px;
+            opacity: 0;
+            transform: translateY(-4px);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+        }
+        .member-card:hover .member-actions,
+        .member-card:focus-within .member-actions {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 28px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .action-btn.edit {
+            color: #2980b9;
+            border-color: #2980b9;
+            background: rgba(234,242,251,0.95);
+        }
+        .action-btn.delete {
+            color: #e74c3c;
+            border-color: #e74c3c;
+            background: rgba(253,236,235,0.95);
+        }
+        .action-btn.photo {
+            color: #16a085;
+            border-color: #16a085;
+            background: rgba(22,160,133,0.1);
+        }
+        .action-btn:hover {
+            filter: brightness(0.97);
+        }
+
+        .member-role {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 5px; /* Added margin top since it's below now */
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .member-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 8px;
+            border: 2px solid var(--primary-green);
+        }
+
+        .member-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 5px;
+            white-space: nowrap;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .member-card:hover .delete-btn {
+            opacity: 1;
+        }
+        .edit-btn {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: none;
+            border: none;
+            color: #2980b9;
+            cursor: pointer;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .member-card:hover .edit-btn {
+            opacity: 1;
+        }
+
+        /* Exported Title (Visible on Screen now for Logo positioning) */
+        .chart-header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+            min-height: 80px;
+        }
+
+        .chart-title {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--court-green);
+            font-weight: bold;
+            margin: 0 20px;
+        }
+
+        /* Logos */
+        .logo-img {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+        }
+        .logo-emoji {
+            font-size: 60px;
+            line-height: 1;
+            display: inline-block;
+        }
+
+        /* Positioning Classes */
+        .pos-corner {
+            position: absolute;
+            top: 20px;
+        }
+        .pos-corner.left { left: 20px; }
+        .pos-corner.right { right: 20px; }
+
+        .pos-bottom {
+            position: absolute;
+            bottom: 20px;
+        }
+        .pos-bottom.left { left: 20px; }
+        .pos-bottom.right { right: 20px; }
+
+        /* Delete Line Button */
+        .delete-line-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: none; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            z-index: 5;
+        }
+        .level-row:hover .delete-line-btn {
+            display: flex;
+        }
+
+        .watermark {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            color: rgba(44,62,80,0.5);
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            user-select: none;
+            pointer-events: none;
+        }
+
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+    <header>
+        <h1>Organigramme Club</h1>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar Controls -->
+        <aside class="sidebar">
+            
+            <!-- Add Member -->
+            <div class="control-group">
+                <div class="control-title">👤 Nouveau Membre</div>
+                <input type="text" id="input-lastname" placeholder="Nom" />
+                <input type="text" id="input-firstname" placeholder="Prénom" />
+                
+                <input type="text" id="input-role" list="roles-suggestions" placeholder="Rôle (Saisir ou choisir)" />
+                <datalist id="roles-suggestions">
+                    <option value="Président">
+                    <option value="Présidente">
+                    <option value="Vice-Président">
+                    <option value="Vice-Présidente">
+                    <option value="Trésorier">
+                    <option value="Trésorière">
+                    <option value="Vice-Trésorier">
+                    <option value="Vice-Trésorière">
+                    <option value="Secrétaire">
+                    <option value="Vice-Secrétaire">
+                    <option value="Membre actif">
+                    <option value="Respo Comm">
+                </datalist>
+                
+                <label style="font-size: 0.9rem; color:#666; margin-bottom:5px; display:block;">Placer sur la ligne :</label>
+                <select id="select-level">
+                    <!-- Populated by JS -->
+                </select>
+
+                <button onclick="addMember()">Ajouter le membre</button>
+            </div>
+
+            <!-- Add Level -->
+            <div class="control-group">
+                <div class="control-title">📂 Nouvelle Ligne</div>
+                <button class="secondary" onclick="addLine()">Ajouter une ligne à la section</button>
+            </div>
+
+            <!-- Customization -->
+            <div class="control-group">
+                <div class="control-title">🎨 Personnalisation</div>
+                
+                <label style="font-size: 0.9rem; color:#666;">Nom du Club :</label>
+                <input type="text" id="input-club-name" value="Mon Organigramme" oninput="updateClubName(this.value)" placeholder="Nom du club" />
+
+                <label style="font-size: 0.9rem; color:#666;">Couleur Principale :</label>
+                <input type="color" id="input-color" value="#2ecc71" onchange="updateThemeColor(this.value)" style="height:40px; cursor:pointer;" />
+
+                <label style="font-size: 0.9rem; color:#666;">Logo prédéfini :</label>
+                <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:10px;">
+                    <select id="select-preset-logo" onchange="updatePresetLogo(this.value)">
+                        <option value="none">Aucun</option>
+                        <optgroup label="Sport">
+                            <option value="football">⚽️ Football</option>
+                            <option value="basket">🏀 Basket</option>
+                            <option value="tennis">🎾 Tennis</option>
+                            <option value="badminton">🏸 Badminton</option>
+                            <option value="rugby">🏉 Rugby</option>
+                            <option value="natation">🏊 Natation</option>
+                            <option value="athletisme">🏃 Athlétisme</option>
+                            <option value="cyclisme">🚴 Cyclisme</option>
+                            <option value="handball">🤾 Handball</option>
+                            <option value="volley">🏐 Volley</option>
+                        </optgroup>
+                        <optgroup label="Travail">
+                            <option value="briefcase">💼 Dossier</option>
+                            <option value="tools">🛠️ Outils</option>
+                            <option value="gear">⚙️ Rouage</option>
+                            <option value="construction">🏗️ Chantier</option>
+                            <option value="worker">👷 Ouvrier</option>
+                            <option value="microscope">🔬 Laboratoire</option>
+                            <option value="computer">🖥️ Informatique</option>
+                            <option value="factory">🏭 Usine</option>
+                            <option value="network">🌐 Réseau</option>
+                            <option value="chart">📊 Graphique</option>
+                        </optgroup>
+                    </select>
+                    <select id="select-logo-pos" onchange="updateLogoPosition(this.value)" style="display:none;">
+                        <option value="corners">Dans les coins (Haut)</option>
+                        <option value="title">Autour du nom du club</option>
+                        <option value="bottom">En bas (Coins)</option>
+                    </select>
+                    <label style="font-size: 0.9rem; color:#666;">Logo personnalisé (image) :</label>
+                    <label for="input-custom-logo" style="background:#34495e; color:white; padding:8px; border-radius:6px; text-align:center; cursor:pointer; font-size:0.9rem;">
+                        📁 Charger une image...
+                    </label>
+                    <input type="file" id="input-custom-logo" accept="image/*" onchange="handleCustomLogoUpload(this)" style="display:none;" />
+                    <div id="custom-logo-preview-container" style="display:none; align-items:center; gap:10px; background:#f1f1f1; padding:5px; border-radius:6px;">
+                        <img id="custom-logo-preview" src="" style="height:30px; width:auto;" />
+                        <span style="font-size:0.8rem; color:#555; flex:1;">Logo personnalisé chargé</span>
+                        <button onclick="removeCustomLogo()" style="background:none; color:#e74c3c; border:none; padding:0; width:auto; font-size:1.2rem; cursor:pointer;" title="Supprimer le logo">&times;</button>
+                    </div>
+                </div>
+
+                <label style="font-size: 0.9rem; color:#666;">Format du nom :</label>
+                <select id="select-name-format" onchange="updateNameFormat(this.value)">
+                    <option value="last-first">NOM Prénom</option>
+                    <option value="first-last">Prénom NOM</option>
+                </select>
+
+                <label style="font-size: 0.9rem; color:#666;">Titre de la section (ex: Bureau) :</label>
+                <input type="text" id="input-section-title" value="Organigramme du Bureau" oninput="updateSectionTitle(this.value)" />
+            </div>
+
+            <!-- Actions -->
+            <div class="control-group">
+                <div class="control-title">⚙️ Actions</div>
+                <button onclick="exportPDF()" style="background-color: #3498db; margin-bottom: 10px;">📄 Exporter en PDF</button>
+                <button style="background-color: #16a085; margin-bottom: 10px;" onclick="saveOrganigram()">💾 Enregistrer Organigramme</button>
+                <button style="background-color: #8e44ad; margin-bottom: 10px;" onclick="openOrganigram()">📂 Ouvrir Organigramme</button>
+                <input type="file" id="open-file" accept="application/json" style="display:none;">
+                <button style="background-color: #f39c12; margin-bottom: 10px;" onclick="newOrganigram()">🆕 Nouvel Organigramme</button>
+                <button style="background-color: #e74c3c;" onclick="resetChart()">Tout effacer</button>
+            </div>
+            
+            <!-- Footer / Copyright -->
+            <div style="margin-top: auto; text-align: center; font-size: 0.8rem; color: #bdc3c7; padding-top: 20px;">
+                &copy; Corentin BLERVACQUE
+            </div>
+
+        </aside>
+
+        <!-- Main Chart -->
+        <main class="chart-area" id="chart-container">
+            <!-- Dynamic Content Here -->
+        </main>
+    </div>
+    <div id="edit-modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
+        <div style="background:#fff; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.2); padding:20px; width:320px; max-width:90vw;">
+            <div style="font-weight:bold; color:var(--court-green); margin-bottom:10px; text-align:center;">Modifier le membre</div>
+            <input type="text" id="edit-lastname" placeholder="Nom">
+            <input type="text" id="edit-firstname" placeholder="Prénom">
+            <input type="text" id="edit-role" list="roles-suggestions" placeholder="Rôle">
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button onclick="applyEditMember()">Enregistrer</button>
+                <button class="secondary" onclick="cancelEditMember()">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Structure
+        let data = {
+            // "Sections" are top-level bubbles (e.g., Bureau)
+            sections: [
+                {
+                    id: 1,
+                    title: "Organigramme du Bureau",
+                    lines: [
+                        { id: 101, name: "Ligne 1", members: [] },
+                        { id: 102, name: "Ligne 2", members: [] }
+                    ]
+                }
+            ]
+        };
+
+        let currentLogo = null;
+        let logoPosition = 'corners'; // 'corners', 'title', 'bottom'
+        let nameFormat = 'last-first'; // 'last-first' or 'first-last'
+        let selectedLogoKey = 'none';
+        let currentLogoEmoji = null;
+        let currentLogoImage = null;
+
+        // Initialize
+        function init() {
+            // Set Initial Values based on Data
+            document.getElementById('input-section-title').value = data.sections[0].title;
+            updateClubName("Mon Organigramme"); // Default
+            render();
+        }
+
+        // --- Customization Logic ---
+
+        function updateClubName(name) {
+            // Update Header (Sidebar)
+            const headerTitle = document.querySelector('header h1');
+            headerTitle.textContent = `${name}`;
+            
+            // Update Chart Title
+            renderChart();
+        }
+
+        function updateSectionTitle(newTitle) {
+            if (data.sections.length > 0) {
+                data.sections[0].title = newTitle;
+                render(); 
+            }
+        }
+
+        function updateThemeColor(hex) {
+            const root = document.documentElement;
+            root.style.setProperty('--primary-green', hex);
+            root.style.setProperty('--dark-green', adjustColor(hex, -20));
+            root.style.setProperty('--court-green', adjustColor(hex, -40));
+        }
+
+        function adjustColor(color, amount) {
+            return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+        }
+
+        function updatePresetLogo(key) {
+            selectedLogoKey = key;
+            const map = {
+                none: null,
+                football: '⚽️',
+                basket: '🏀',
+                tennis: '🎾',
+                badminton: '🏸',
+                rugby: '🏉',
+                natation: '🏊',
+                athletisme: '🏃',
+                cyclisme: '🚴',
+                handball: '🤾',
+                volley: '🏐',
+                briefcase: '💼',
+                tools: '🛠️',
+                gear: '⚙️',
+                construction: '🏗️',
+                worker: '👷',
+                microscope: '🔬',
+                computer: '🖥️',
+                factory: '🏭',
+                network: '🌐',
+                chart: '📊'
+            };
+            currentLogoEmoji = map[key] || null;
+            const posSelect = document.getElementById('select-logo-pos');
+            posSelect.style.display = (currentLogoEmoji || currentLogoImage) ? 'block' : 'none';
+            renderChart();
+        }
+        function handleCustomLogoUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentLogoImage = e.target.result;
+                    const prev = document.getElementById('custom-logo-preview');
+                    const cont = document.getElementById('custom-logo-preview-container');
+                    prev.src = currentLogoImage;
+                    cont.style.display = 'flex';
+                    const posSelect = document.getElementById('select-logo-pos');
+                    posSelect.style.display = 'block';
+                    renderChart();
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        function removeCustomLogo() {
+            currentLogoImage = null;
+            const cont = document.getElementById('custom-logo-preview-container');
+            const input = document.getElementById('input-custom-logo');
+            if (cont) cont.style.display = 'none';
+            if (input) input.value = '';
+            const posSelect = document.getElementById('select-logo-pos');
+            posSelect.style.display = (currentLogoEmoji) ? 'block' : 'none';
+            renderChart();
+        }
+
+        function updateLogoPosition(pos) {
+            logoPosition = pos;
+            renderChart();
+        }
+
+        function updateNameFormat(format) {
+            nameFormat = format;
+            renderChart();
+        }
+
+        // --- Core Logic ---
+
+        function addLine() {
+            // For now, we only target the first section "Bureau"
+            const section = data.sections[0];
+            const nextNum = section.lines.length + 1;
+            
+            section.lines.push({
+                id: Date.now(),
+                name: `Ligne ${nextNum}`,
+                members: []
+            });
+
+            render();
+        }
+
+        function addMember() {
+            const lastname = document.getElementById('input-lastname').value.trim();
+            const firstname = document.getElementById('input-firstname').value.trim();
+            const role = document.getElementById('input-role').value.trim();
+            const lineId = parseInt(document.getElementById('select-level').value);
+
+            if (!lastname || !firstname || !role) {
+                alert("Veuillez remplir tous les champs du membre.");
+                return;
+            }
+
+            // Find line across all sections
+            let targetLine = null;
+            data.sections.forEach(sec => {
+                const line = sec.lines.find(l => l.id === lineId);
+                if (line) targetLine = line;
+            });
+
+            if (!targetLine) {
+                alert("Erreur : Ligne introuvable.");
+                return;
+            }
+
+            targetLine.members.push({
+                id: Date.now(),
+                lastname: lastname,
+                firstname: firstname,
+                role: role
+            });
+
+            // Clear inputs
+            document.getElementById('input-lastname').value = '';
+            document.getElementById('input-firstname').value = '';
+            document.getElementById('input-role').value = '';
+
+            render();
+        }
+
+        function removeLine(lineId) {
+            if(confirm("Voulez-vous vraiment supprimer cette ligne et tous ses membres ?")) {
+                data.sections.forEach(sec => {
+                    sec.lines = sec.lines.filter(l => l.id !== lineId);
+                });
+                render();
+            }
+        }
+
+        function removeMember(lineId, memberId) {
+            data.sections.forEach(sec => {
+                const line = sec.lines.find(l => l.id === lineId);
+                if (line) {
+                    line.members = line.members.filter(m => m.id !== memberId);
+                }
+            });
+            render();
+        }
+
+        function resetChart() {
+            if(confirm("Êtes-vous sûr de vouloir tout effacer ?")) {
+                // Reset to one empty section
+                data.sections = [
+                    {
+                        id: 1,
+                        title: "Organigramme du Bureau",
+                        lines: [ { id: Date.now(), name: "Ligne 1", members: [] } ]
+                    }
+                ];
+                render();
+            }
+        }
+        function newOrganigram() {
+            if(confirm("Créer un nouvel organigramme et réinitialiser tous les paramètres ?")) {
+                data.sections = [
+                    {
+                        id: 1,
+                        title: "Organigramme du Bureau",
+                        lines: [ { id: Date.now(), name: "Ligne 1", members: [] } ]
+                    }
+                ];
+                currentLogoEmoji = null;
+                currentLogoImage = null;
+                logoPosition = 'corners';
+                nameFormat = 'last-first';
+                selectedLogoKey = 'none';
+                document.getElementById('input-club-name').value = 'Mon Organigramme';
+                document.getElementById('input-section-title').value = data.sections[0].title;
+                const selectPos = document.getElementById('select-logo-pos');
+                const preset = document.getElementById('select-preset-logo');
+                const customPrev = document.getElementById('custom-logo-preview-container');
+                const customInput = document.getElementById('input-custom-logo');
+                if (selectPos) selectPos.style.display = 'none';
+                if (preset) preset.value = 'none';
+                if (customPrev) customPrev.style.display = 'none';
+                if (customInput) customInput.value = '';
+                render();
+            }
+        }
+        function saveOrganigram() {
+            const clubName = document.getElementById('input-club-name').value;
+            const payload = {
+                data,
+                currentLogoEmoji,
+                currentLogoImage,
+                logoPosition,
+                nameFormat,
+                clubName,
+                selectedLogoKey
+            };
+            const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'Mon Organigramme.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+        }
+        function openOrganigram() {
+            const input = document.getElementById('open-file');
+            input.onchange = function(ev) {
+                const file = ev.target.files && ev.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const obj = JSON.parse(e.target.result);
+                        if (obj && obj.data && obj.data.sections) {
+                            data = obj.data;
+                            currentLogoEmoji = obj.currentLogoEmoji || null;
+                            currentLogoImage = obj.currentLogoImage || null;
+                            logoPosition = obj.logoPosition || 'corners';
+                            nameFormat = obj.nameFormat || 'last-first';
+                            const clubName = obj.clubName || 'Mon Organigramme';
+                            selectedLogoKey = obj.selectedLogoKey || (currentLogoEmoji ? 'custom' : 'none');
+                            document.getElementById('input-club-name').value = clubName;
+                            document.getElementById('input-section-title').value = data.sections[0]?.title || '';
+                            const selectPos = document.getElementById('select-logo-pos');
+                            const preset = document.getElementById('select-preset-logo');
+                            if (preset) preset.value = selectedLogoKey !== 'custom' ? selectedLogoKey : 'none';
+                            if (selectPos) selectPos.style.display = (currentLogoEmoji || currentLogoImage) ? 'block' : 'none';
+                            const prev = document.getElementById('custom-logo-preview-container');
+                            const imgPrev = document.getElementById('custom-logo-preview');
+                            if (currentLogoImage) {
+                                imgPrev.src = currentLogoImage;
+                                prev.style.display = 'flex';
+                            } else {
+                                prev.style.display = 'none';
+                            }
+                            render();
+                        } else {
+                            alert('Fichier invalide.');
+                        }
+                    } catch (err) {
+                        alert('Erreur de lecture du fichier.');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+        let editingLineId = null;
+        let editingMemberId = null;
+        function openEditMember(lineId, memberId) {
+            editingLineId = lineId;
+            editingMemberId = memberId;
+            let member = null;
+            data.sections.forEach(sec => {
+                const line = sec.lines.find(l => l.id === lineId);
+                if (line) {
+                    member = line.members.find(m => m.id === memberId) || member;
+                }
+            });
+            if (!member) return;
+            document.getElementById('edit-lastname').value = member.lastname;
+            document.getElementById('edit-firstname').value = member.firstname;
+            document.getElementById('edit-role').value = member.role;
+            const overlay = document.getElementById('edit-modal-overlay');
+            overlay.style.display = 'flex';
+        }
+        function cancelEditMember() {
+            editingLineId = null;
+            editingMemberId = null;
+            const overlay = document.getElementById('edit-modal-overlay');
+            overlay.style.display = 'none';
+        }
+        function applyEditMember() {
+            const ln = document.getElementById('edit-lastname').value.trim();
+            const fn = document.getElementById('edit-firstname').value.trim();
+            const rl = document.getElementById('edit-role').value.trim();
+            if (!ln || !fn || !rl) {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
+            data.sections.forEach(sec => {
+                const line = sec.lines.find(l => l.id === editingLineId);
+                if (line) {
+                    const member = line.members.find(m => m.id === editingMemberId);
+                    if (member) {
+                        member.lastname = ln;
+                        member.firstname = fn;
+                        member.role = rl;
+                    }
+                }
+            });
+            cancelEditMember();
+            render();
+        }
+
+        function exportPDF() {
+            const element = document.getElementById('chart-container');
+            
+            // Show title temporarily
+            const title = element.querySelector('.export-title');
+            if(title) title.style.display = 'block';
+
+            // Temporarily modify styles to ensure full capture (fix cut-off)
+            const originalOverflow = element.style.overflow;
+            const originalHeight = element.style.height;
+            
+            element.style.overflow = 'visible'; // Allow full expansion
+            element.style.height = 'auto';      // Remove height limit
+
+            // Hide delete buttons
+            const deleteBtns = element.querySelectorAll('.delete-btn, .delete-line-btn');
+            deleteBtns.forEach(btn => btn.style.display = 'none');
+
+            const opt = {
+                margin: 10,
+                filename: 'Mon Organigramme.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+
+            // New Promise-based usage:
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Restore styles
+                element.style.overflow = originalOverflow;
+                element.style.height = originalHeight;
+                
+                // Restore buttons (reset inline style to let CSS hover work)
+                deleteBtns.forEach(btn => btn.style.display = '');
+
+                // Hide title again
+                if(title) title.style.display = 'none';
+            });
+        }
+
+        // --- Rendering ---
+
+        function render() {
+            renderLevelsSelect();
+            renderChart();
+        }
+
+        function renderLevelsSelect() {
+            const select = document.getElementById('select-level');
+            const currentVal = select.value;
+            select.innerHTML = '';
+
+            data.sections.forEach(section => {
+                // Optional: Add optgroup if multiple sections
+                // const group = document.createElement('optgroup');
+                // group.label = section.title;
+                
+                section.lines.forEach(line => {
+                    const option = document.createElement('option');
+                    option.value = line.id;
+                    option.textContent = `${section.title} - ${line.name}`;
+                    select.appendChild(option);
+                });
+            });
+
+            // Restore selection if possible
+            // Simple check: does the value exist in new options?
+            let exists = false;
+            for(let i=0; i<select.options.length; i++){
+                if(select.options[i].value == currentVal) exists = true;
+            }
+
+            if (currentVal && exists) {
+                select.value = currentVal;
+            }
+        }
+
+        function renderChart() {
+            const container = document.getElementById('chart-container');
+            container.innerHTML = '';
+
+            // Header Container (Title + Logos)
+            const headerContainer = document.createElement('div');
+            headerContainer.className = 'chart-header-container';
+
+            // Title
+            const clubName = document.getElementById('input-club-name').value;
+            const titleEl = document.createElement('div');
+            titleEl.className = 'chart-title';
+            titleEl.textContent = clubName;
+            
+            // Add Title to Header (Order depends on positioning logic below)
+            headerContainer.appendChild(titleEl);
+
+            // Add Logos based on Position
+            if (currentLogoImage || currentLogoEmoji) {
+                if (logoPosition === 'title') {
+                    // Flanking the title
+                    let leftEl, rightEl;
+                    if (currentLogoImage) {
+                        leftEl = document.createElement('img');
+                        leftEl.src = currentLogoImage;
+                        leftEl.className = 'logo-img';
+                        rightEl = document.createElement('img');
+                        rightEl.src = currentLogoImage;
+                        rightEl.className = 'logo-img';
+                    } else {
+                        leftEl = document.createElement('span');
+                        leftEl.className = 'logo-emoji';
+                        leftEl.textContent = currentLogoEmoji;
+                        rightEl = document.createElement('span');
+                        rightEl.className = 'logo-emoji';
+                        rightEl.textContent = currentLogoEmoji;
+                    }
+
+                    // Re-arrange: Img Title Img
+                    headerContainer.innerHTML = '';
+                    headerContainer.appendChild(leftEl);
+                    headerContainer.appendChild(titleEl);
+                    headerContainer.appendChild(rightEl);
+                } 
+                else if (logoPosition === 'corners') {
+                    // Absolute Corners
+                    let leftEl, rightEl;
+                    if (currentLogoImage) {
+                        leftEl = document.createElement('img');
+                        leftEl.src = currentLogoImage;
+                        leftEl.className = 'logo-img pos-corner left';
+                        rightEl = document.createElement('img');
+                        rightEl.src = currentLogoImage;
+                        rightEl.className = 'logo-img pos-corner right';
+                    } else {
+                        leftEl = document.createElement('span');
+                        leftEl.className = 'logo-emoji pos-corner left';
+                        leftEl.textContent = currentLogoEmoji;
+                        rightEl = document.createElement('span');
+                        rightEl.className = 'logo-emoji pos-corner right';
+                        rightEl.textContent = currentLogoEmoji;
+                    }
+                    headerContainer.appendChild(leftEl);
+                    headerContainer.appendChild(rightEl);
+                }
+                else if (logoPosition === 'bottom') {
+                    // Absolute Bottom (of container, not header)
+                    // We attach to container later
+                }
+            }
+
+            container.appendChild(headerContainer);
+
+            // Render Sections
+            if (data.sections.length === 0) {
+                container.innerHTML += '<div>Aucune section.</div>';
+                // Don't return, as we might need to render bottom logos
+            } else {
+                data.sections.forEach(section => {
+                    // Create Bubble Container
+                    const bubble = document.createElement('div');
+                    bubble.className = 'section-bubble';
+                    
+                    const title = document.createElement('div');
+                    title.className = 'section-title';
+                    title.textContent = section.title;
+                    bubble.appendChild(title);
+
+                    // Render Lines
+                    if (section.lines.length === 0) {
+                        const empty = document.createElement('div');
+                        empty.style.color = '#999';
+                        empty.style.textAlign = 'center';
+                        empty.textContent = "Aucune ligne dans cette section.";
+                        bubble.appendChild(empty);
+                    } else {
+                        section.lines.forEach(line => {
+                            const row = document.createElement('div');
+                            row.className = 'level-row';
+                            
+                            const header = document.createElement('div');
+                            header.className = 'level-header';
+                            header.textContent = line.name;
+                            row.appendChild(header);
+
+                            // Delete Line Button (Visible on hover)
+                            const deleteLineBtn = document.createElement('button');
+                            deleteLineBtn.className = 'delete-line-btn';
+                            deleteLineBtn.innerHTML = '🗑️'; 
+                            deleteLineBtn.title = "Supprimer la ligne";
+                            deleteLineBtn.onclick = (e) => {
+                                e.stopPropagation();
+                                removeLine(line.id);
+                            };
+                            row.appendChild(deleteLineBtn);
+
+                            const membersContainer = document.createElement('div');
+                            membersContainer.className = 'members-container';
+                            membersContainer.dataset.lineId = line.id;
+                            membersContainer.addEventListener('dragenter', function(e){ e.preventDefault(); this.classList.add('drag-over'); });
+                            membersContainer.addEventListener('dragover', function(e){ e.preventDefault(); this.classList.add('drag-over'); });
+                            membersContainer.addEventListener('dragleave', function(){ this.classList.remove('drag-over'); });
+                            membersContainer.addEventListener('drop', function(e){
+                                e.preventDefault();
+                                this.classList.remove('drag-over');
+                                try {
+                                    const payload = JSON.parse(e.dataTransfer.getData('text/plain'));
+                                    const fromLineId = payload.fromLineId;
+                                    const memberId = payload.memberId;
+                                    const toLineId = parseInt(this.dataset.lineId);
+                                    if (!memberId || !fromLineId || !toLineId) return;
+                                    if (fromLineId === toLineId) return;
+                                    let moved = null;
+                                    data.sections.forEach(sec => {
+                                        const fromLine = sec.lines.find(l => l.id === fromLineId);
+                                        if (fromLine) {
+                                            const idx = fromLine.members.findIndex(m => m.id === memberId);
+                                            if (idx !== -1) {
+                                                moved = fromLine.members.splice(idx, 1)[0];
+                                            }
+                                        }
+                                    });
+                                    if (moved) {
+                                        data.sections.forEach(sec => {
+                                            const toLine = sec.lines.find(l => l.id === toLineId);
+                                            if (toLine) {
+                                                toLine.members.push(moved);
+                                            }
+                                        });
+                                        render();
+                                    }
+                                } catch(_e){}
+                            });
+
+                            line.members.forEach(member => {
+                                const card = document.createElement('div');
+                                card.className = 'member-card';
+                                card.draggable = true;
+                                card.addEventListener('dragstart', function(e){
+                                    e.dataTransfer.setData('text/plain', JSON.stringify({ memberId: member.id, fromLineId: line.id }));
+                                });
+                                
+                                const nameDiv = document.createElement('div');
+                                nameDiv.className = 'member-name';
+                                if (nameFormat === 'first-last') {
+                                    nameDiv.textContent = `${member.firstname} ${member.lastname}`;
+                                } else {
+                                    nameDiv.textContent = `${member.lastname} ${member.firstname}`;
+                                }
+
+                                const roleDiv = document.createElement('div');
+                                roleDiv.className = 'member-role';
+                                roleDiv.textContent = member.role;
+                                
+                                const photoInput = document.createElement('input');
+                                photoInput.type = 'file';
+                                photoInput.accept = 'image/*';
+                                photoInput.style.display = 'none';
+                                photoInput.onchange = function(ev) {
+                                    const file = ev.target.files && ev.target.files[0];
+                                    if (!file) return;
+                                    const reader = new FileReader();
+                                    reader.onload = function(e) {
+                                        member.photo = e.target.result;
+                                        render();
+                                    };
+                                    reader.readAsDataURL(file);
+                                };
+                                
+                                if (member.photo) {
+                                    const photoEl = document.createElement('img');
+                                    photoEl.className = 'member-photo';
+                                    photoEl.src = member.photo;
+                                    card.appendChild(photoEl);
+                                }
+                                
+                                const actions = document.createElement('div');
+                                actions.className = 'member-actions';
+                                const editButton = document.createElement('button');
+                                editButton.className = 'action-btn edit';
+                                editButton.textContent = '✎';
+                                editButton.title = 'Modifier';
+                                editButton.onclick = () => openEditMember(line.id, member.id);
+                                const deleteButton = document.createElement('button');
+                                deleteButton.className = 'action-btn delete';
+                                deleteButton.textContent = '×';
+                                deleteButton.title = 'Supprimer';
+                                deleteButton.onclick = () => removeMember(line.id, member.id);
+                                const photoButton = document.createElement('button');
+                                photoButton.className = 'action-btn photo';
+                                photoButton.textContent = '🖼️';
+                                photoButton.title = 'Ajouter photo';
+                                photoButton.onclick = () => photoInput.click();
+                                actions.appendChild(editButton);
+                                actions.appendChild(deleteButton);
+                                actions.appendChild(photoButton);
+
+                                card.appendChild(nameDiv);
+                                card.appendChild(roleDiv);
+                                card.appendChild(actions);
+                                card.appendChild(photoInput);
+
+                                membersContainer.appendChild(card);
+                            });
+
+                            row.appendChild(membersContainer);
+                            bubble.appendChild(row);
+                        });
+                    }
+                    container.appendChild(bubble);
+                });
+            }
+
+            // Render Bottom Logos if needed
+            if ((currentLogoImage || currentLogoEmoji) && logoPosition === 'bottom') {
+                let leftEl, rightEl;
+                if (currentLogoImage) {
+                    leftEl = document.createElement('img');
+                    leftEl.src = currentLogoImage;
+                    leftEl.className = 'logo-img pos-bottom left';
+                    rightEl = document.createElement('img');
+                    rightEl.src = currentLogoImage;
+                    rightEl.className = 'logo-img pos-bottom right';
+                } else {
+                    leftEl = document.createElement('span');
+                    leftEl.className = 'logo-emoji pos-bottom left';
+                    leftEl.textContent = currentLogoEmoji;
+                    rightEl = document.createElement('span');
+                    rightEl.className = 'logo-emoji pos-bottom right';
+                    rightEl.textContent = currentLogoEmoji;
+                }
+                container.appendChild(leftEl);
+                container.appendChild(rightEl);
+            }
+
+            const watermark = document.createElement('div');
+            watermark.className = 'watermark';
+            watermark.textContent = '© Corentin BLERVACQUE';
+            container.appendChild(watermark);
+        }
+
+        // Run
+        init();
+
+    </script>
+</body>
+</html>
