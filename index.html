@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organigramme Club Badminton</title>
+    <style>
+        :root {
+            --primary-green: #2ecc71;
+            --dark-green: #27ae60;
+            --court-green: #1a472a; /* Vert terrain */
+            --shuttle-white: #ffffff;
+            --line-color: #ecf0f1;
+            --text-main: #2c3e50;
+            --bg-color: #f7f9fc;
+            --chart-title-color: #1a472a;
+            --section-title-bg: var(--primary-green);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--court-green);
+            color: var(--shuttle-white);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .header-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-btn {
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: #ffffff;
+            color: var(--court-green);
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1px solid #e6eaef;
+            cursor: pointer;
+            width: auto;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .header-btn:hover {
+            background: #f7f9fc;
+        }
+        .header-identity {
+            background: #ffffff;
+            color: var(--court-green);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #e6eaef;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .header-tools {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tool-btn {
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: #ffffff;
+            color: var(--court-green);
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1px solid #e6eaef;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            cursor: pointer;
+            width: auto;
+        }
+        .tool-btn:hover {
+            background: #f7f9fc;
+        }
+        .color-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+            height: calc(100vh - 80px);
+            box-sizing: border-box;
+        }
+
+        /* Sidebar Controls */
+        .sidebar {
+            width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            overflow-y: auto;
+        }
+
+        .control-group {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        
+        .control-group:last-child {
+            border-bottom: none;
+        }
+
+        .control-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--court-green);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary-green);
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--dark-green);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-green);
+        }
+
+        button.secondary {
+            background-color: #95a5a6;
+        }
+        button.secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        /* Main Chart Area */
+        .chart-area {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 30px;
+            overflow-y: auto;
+            position: relative;
+            background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Bubble Section */
+        .section-bubble {
+            border: 2px solid var(--primary-green);
+            border-radius: 20px;
+            padding: 40px 20px 20px 20px;
+            margin-bottom: 30px;
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.1);
+        }
+
+        .section-title {
+            position: absolute;
+            top: -15px;
+            left: 30px;
+            background-color: var(--section-title-bg);
+            color: white;
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .level-row {
+            margin-bottom: 20px;
+            position: relative;
+            border-bottom: 1px solid #eee;
+            padding: 15px;
+            background: transparent;
+        }
+
+        .level-row:last-child {
+            border-bottom: none;
+        }
+
+        .level-header {
+            display: none; /* Masquer les numéros de ligne */
+        }
+
+        .members-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding-top: 0;
+            padding-left: 0;
+            min-height: 100px;
+            align-items: center;
+        }
+        .members-container.drag-over {
+            background-color: rgba(46, 204, 113, 0.1);
+            border: 2px dashed var(--primary-green);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        /* Member Card */
+        .member-card {
+            background: white;
+            border: 1px solid #e1e1e1;
+            border-bottom: 5px solid var(--primary-green);
+            border-radius: 8px;
+            width: auto;
+            min-width: 120px;
+            max-width: 100%;
+            padding: 10px 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .member-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .member-actions {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            display: inline-flex;
+            gap: 6px;
+            opacity: 0;
+            transform: translateY(-4px);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+        }
+        .member-card:hover .member-actions,
+        .member-card:focus-within .member-actions {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 28px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .action-btn.edit {
+            color: #2980b9;
+            border-color: #2980b9;
+            background: rgba(234,242,251,0.95);
+        }
+        .action-btn.delete {
+            color: #e74c3c;
+            border-color: #e74c3c;
+            background: rgba(253,236,235,0.95);
+        }
+        .action-btn.photo {
+            color: #16a085;
+            border-color: #16a085;
+            background: rgba(22,160,133,0.1);
+        }
+        .action-btn:hover {
+            filter: brightness(0.97);
+        }
+
+        .member-role {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 5px; /* Added margin top since it's below now */
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .member-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 8px;
+            border: 2px solid var(--primary-green);
+        }
+
+        .member-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 5px;
+            white-space: nowrap;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .member-card:hover .delete-btn {
+            opacity: 1;
+        }
+        .edit-btn {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: none;
+            border: none;
+            color: #2980b9;
+            cursor: pointer;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .member-card:hover .edit-btn {
+            opacity: 1;
+        }
+
+        /* Exported Title (Visible on Screen now for Logo positioning) */
+        .chart-header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+            min-height: 80px;
+        }
+
+        .chart-title {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--chart-title-color);
+            font-weight: bold;
+            margin: 0 20px;
+        }
+
+        /* Logos */
+        .logo-img {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+        }
+        .logo-emoji {
+            font-size: 60px;
+            line-height: 1;
+            display: inline-block;
+        }
+        .account-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .badge-free {
+            background: #ecf9f1;
+            color: #16a085;
+            border: 1px solid #16a085;
+        }
+        .badge-premium {
+            background: #fff8e6;
+            color: #f1c40f;
+            border: 1px solid #f1c40f;
+        }
+
+        /* Positioning Classes */
+        .pos-corner {
+            position: absolute;
+            top: 20px;
+        }
+        .pos-corner.left { left: 20px; }
+        .pos-corner.right { right: 20px; }
+
+        .pos-bottom {
+            position: absolute;
+            bottom: 20px;
+        }
+        .pos-bottom.left { left: 20px; }
+        .pos-bottom.right { right: 20px; }
+
+        /* Delete Line Button */
+        .delete-line-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: none; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            z-index: 5;
+        }
+        .level-row:hover .delete-line-btn {
+            display: flex;
+        }
+
+        .watermark {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(44,62,80,0.15);
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            user-select: none;
+            pointer-events: none;
+            transform: rotate(-18deg);
+            text-align: center;
+        }
+
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <header>
+        <h1>Organigramme Club</h1>
+        <div id="header-actions" class="header-actions"></div>
+        <div id="header-tools" class="header-tools"></div>
+        <input type="file" id="open-file" accept="application/json" style="display:none;">
+    </header>
+
+    <div class="container">
+        <!-- Sidebar Controls -->
+        <aside class="sidebar">
+            
+            <!-- Add Member -->
+            <div class="control-group">
+                <div class="control-title">👤 Nouveau Membre</div>
+                <input type="text" id="input-lastname" placeholder="Nom" />
+                <input type="text" id="input-firstname" placeholder="Prénom" />
+                
+                <input type="text" id="input-role" list="roles-suggestions" placeholder="Rôle (Saisir ou choisir)" />
+                <datalist id="roles-suggestions">
+                    <option value="Président">
+                    <option value="Présidente">
+                    <option value="Vice-Président">
+                    <option value="Vice-Présidente">
+                    <option value="Trésorier">
+                    <option value="Trésorière">
+                    <option value="Vice-Trésorier">
+                    <option value="Vice-Trésorière">
+                    <option value="Secrétaire">
+                    <option value="Vice-Secrétaire">
+                    <option value="Membre actif">
+                    <option value="Respo Comm">
+                </datalist>
+                
+                <label style="font-size: 0.9rem; color:#666; margin-bottom:5px; display:block;">Placer sur la ligne :</label>
+                <select id="select-level">
+                    <!-- Populated by JS -->
+                </select>
+
+                <button onclick="addMember()">Ajouter le membre</button>
+            </div>
+
+            <!-- Add Level -->
+            <div class="control-group">
+                <div class="control-title">➕ Nouvelle Ligne</div>
+                <button class="secondary" onclick="addLine()">Ajouter une ligne à la section</button>
+            </div>
+
+            <!-- Customization -->
+            <div class="control-group">
+                <div class="control-title">🎨 Personnalisation</div>
+                
+                <label style="font-size: 0.9rem; color:#666;">Nom du Club :</label>
+                <input type="text" id="input-club-name" value="Mon Organigramme" oninput="updateClubName(this.value)" placeholder="Nom du club" />
+
+                <label style="font-size: 0.9rem; color:#666;">Couleurs :</label>
+                <div class="color-row">
+                    <input type="color" id="input-color" value="#2ecc71" onchange="updateThemeColor(this.value)" style="height:28px; width:36px; cursor:pointer;" title="Couleur principale" />
+                    <span style="font-size:0.85rem; color:#666;">Titre club</span>
+                    <input type="color" id="input-chart-title-color" value="#1a472a" onchange="updateChartTitleColor(this.value)" style="height:28px; width:36px; cursor:pointer;" title="Couleur du titre club" />
+                    <span style="font-size:0.85rem; color:#666;">Titre section</span>
+                    <input type="color" id="input-section-title-color" value="#2ecc71" onchange="updateSectionTitleColor(this.value)" style="height:28px; width:36px; cursor:pointer;" title="Couleur du titre section" />
+                </div>
+
+                <label style="font-size: 0.9rem; color:#666;">Logo prédéfini :</label>
+                <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:10px;">
+                    <select id="select-preset-logo" onchange="updatePresetLogo(this.value)">
+                        <option value="none">Aucun</option>
+                        <optgroup label="Sport">
+                            <option value="football">⚽️ Football</option>
+                            <option value="basket">🏀 Basket</option>
+                            <option value="tennis">🎾 Tennis</option>
+                            <option value="badminton">🏸 Badminton</option>
+                            <option value="rugby">🏉 Rugby</option>
+                            <option value="natation">🏊 Natation</option>
+                            <option value="athletisme">🏃 Athlétisme</option>
+                            <option value="cyclisme">🚴 Cyclisme</option>
+                            <option value="handball">🤾 Handball</option>
+                            <option value="volley">🏐 Volley</option>
+                        </optgroup>
+                        <optgroup label="Travail">
+                            <option value="briefcase">💼 Dossier</option>
+                            <option value="tools">🛠️ Outils</option>
+                            <option value="gear">⚙️ Rouage</option>
+                            <option value="construction">🏗️ Chantier</option>
+                            <option value="worker">👷 Ouvrier</option>
+                            <option value="microscope">🔬 Laboratoire</option>
+                            <option value="computer">🖥️ Informatique</option>
+                            <option value="factory">🏭 Usine</option>
+                            <option value="network">🌐 Réseau</option>
+                            <option value="chart">📊 Graphique</option>
+                        </optgroup>
+                    </select>
+                    <select id="select-logo-pos" onchange="updateLogoPosition(this.value)" style="display:none;">
+                        <option value="corners">Dans les coins (Haut)</option>
+                        <option value="title">Autour du nom du club</option>
+                        <option value="bottom">En bas (Coins)</option>
+                    </select>
+                    <label style="font-size: 0.9rem; color:#666;">Logo personnalisé (image) :</label>
+                    <label for="input-custom-logo" style="background:#34495e; color:white; padding:8px; border-radius:6px; text-align:center; cursor:pointer; font-size:0.9rem;">
+                        📁 Charger une image...
+                    </label>
+                    <input type="file" id="input-custom-logo" accept="image/*" onchange="handleCustomLogoUpload(this)" style="display:none;" />
+                    <div id="custom-logo-preview-container" style="display:none; align-items:center; gap:10px; background:#f1f1f1; padding:5px; border-radius:6px;">
+                        <img id="custom-logo-preview" src="" style="height:30px; width:auto;" />
+                        <span style="font-size:0.8rem; color:#555; flex:1;">Logo personnalisé chargé</span>
+                        <button onclick="removeCustomLogo()" style="background:none; color:#e74c3c; border:none; padding:0; width:auto; font-size:1.2rem; cursor:pointer;" title="Supprimer le logo">&times;</button>
+                    </div>
+                </div>
+
+                <label style="font-size: 0.9rem; color:#666;">Format du nom :</label>
+                <select id="select-name-format" onchange="updateNameFormat(this.value)">
+                    <option value="last-first">NOM Prénom</option>
+                    <option value="first-last">Prénom NOM</option>
+                </select>
+
+                <label style="font-size: 0.9rem; color:#666;">Titre de la section (ex: Bureau) :</label>
+                <input type="text" id="input-section-title" value="Organigramme du Bureau" oninput="updateSectionTitle(this.value)" />
+            </div>
+
+            <!-- Connexion controls removed (now in header) -->
+
+            <!-- Actions -->
+            <!-- Actions moved to header -->
+            
+            <!-- Footer / Copyright -->
+            <div style="margin-top: auto; text-align: center; font-size: 0.8rem; color: #bdc3c7; padding-top: 20px;">
+                &copy; Corentin BLERVACQUE
+            </div>
+
+        </aside>
+
+        <!-- Main Chart -->
+        <main class="chart-area" id="chart-container">
+            <!-- Dynamic Content Here -->
+        </main>
+    </div>
+    <div id="auth-modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
+        <div style="background:#fff; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.2); padding:20px; width:320px; max-width:90vw;">
+            <div id="auth-modal-title" style="font-weight:bold; color:var(--court-green); margin-bottom:10px; text-align:center;">Connexion</div>
+            <input type="email" id="modal-auth-email" placeholder="Email">
+            <input type="password" id="modal-auth-password" placeholder="Mot de passe">
+            <input type="text" id="modal-firstname" placeholder="Prénom" style="display:none;">
+            <input type="text" id="modal-lastname" placeholder="Nom" style="display:none;">
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button onclick="applyAuth()">Valider</button>
+                <button class="secondary" onclick="closeAuthModal()">Annuler</button>
+            </div>
+        </div>
+    </div>
+    <div id="edit-modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
+        <div style="background:#fff; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.2); padding:20px; width:320px; max-width:90vw;">
+            <div style="font-weight:bold; color:var(--court-green); margin-bottom:10px; text-align:center;">Modifier le membre</div>
+            <input type="text" id="edit-lastname" placeholder="Nom">
+            <input type="text" id="edit-firstname" placeholder="Prénom">
+            <input type="text" id="edit-role" list="roles-suggestions" placeholder="Rôle">
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button onclick="applyEditMember()">Enregistrer</button>
+                <button class="secondary" onclick="cancelEditMember()">Annuler</button>
+            </div>
+        </div>
+    </div>
+    <div id="asso-modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
+        <div style="background:#fff; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.2); padding:20px; width:360px; max-width:90vw;">
+            <div style="font-weight:bold; color:var(--court-green); margin-bottom:10px; text-align:center;">Prouver que je suis une asso</div>
+            <input type="text" id="asso-rna" placeholder="N° RNA">
+            <input type="text" id="asso-name" placeholder="Nom de l’Association">
+            <label for="asso-official-pdf" style="display:block; background:#ffffff; color:var(--court-green); padding:8px 12px; border-radius:10px; border:1px solid #e6eaef; box-shadow:0 1px 2px rgba(0,0,0,0.04); text-align:center; cursor:pointer; font-weight:600; font-size:0.9rem; margin-top:8px;">
+                Document Preuve Officiel
+            </label>
+            <input type="file" id="asso-official-pdf" accept="application/pdf" style="display:none;" onchange="handleOfficialPdfChange(this)">
+            <div id="asso-official-preview" style="display:none; align-items:center; gap:10px; background:#f7f9fc; padding:6px 8px; border-radius:10px; border:1px solid #e6eaef; margin-top:8px;">
+                <span id="asso-official-filename" style="font-size:0.85rem; color:#555; flex:1;"></span>
+                <button onclick="removeOfficialPdf()" style="background:none; color:#e74c3c; border:none; padding:0; width:auto; font-size:1.2rem; cursor:pointer;" title="Supprimer le document">&times;</button>
+            </div>
+            <div id="asso-error" style="display:none; color:#e74c3c; font-weight:600; margin-top:4px;">Renseignez toutes les informations</div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button onclick="sendAssoProof()">Envoyer</button>
+                <button class="secondary" onclick="closeAssoModal()">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Structure
+        let data = {
+            // "Sections" are top-level bubbles (e.g., Bureau)
+            sections: [
+                {
+                    id: 1,
+                    title: "Organigramme du Bureau",
+                    lines: [
+                        { id: 101, name: "Ligne 1", members: [] },
+                        { id: 102, name: "Ligne 2", members: [] }
+                    ]
+                }
+            ]
+        };
+
+        let currentLogo = null;
+        let logoPosition = 'corners'; // 'corners', 'title', 'bottom'
+        let nameFormat = 'last-first'; // 'last-first' or 'first-last'
+        let selectedLogoKey = 'none';
+        let currentLogoEmoji = null;
+        let currentLogoImage = null;
+        let supabaseClient = null;
+        let userStatus = null;
+        let authMode = null;
+        const SUPABASE_URL = 'https://uwentorucwxfzczrhwrk.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_NJ7hWqf9XlhnyinZHWBkaA_8aywC_iC';
+        let currentFirstName = '';
+        let currentLastName = '';
+
+        // Initialize
+        function init() {
+            document.getElementById('input-section-title').value = data.sections[0].title;
+            updateClubName("Mon Organigramme");
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            supabaseClient.auth.onAuthStateChange((_event, session) => {
+                if (session && session.user) {
+                    const md = session.user.user_metadata || {};
+                    currentFirstName = md.firstname || '';
+                    currentLastName = md.lastname || '';
+                    fetchProfileStatus(session.user.id).then(() => { render(); renderHeaderActions(); });
+                } else {
+                    userStatus = null;
+                    currentFirstName = '';
+                    currentLastName = '';
+                    render();
+                    renderHeaderActions();
+                }
+            });
+            checkSession();
+            render();
+            renderHeaderActions();
+            renderHeaderTools();
+        }
+
+        // --- Customization Logic ---
+
+        function updateClubName(name) {
+            // Update Header (Sidebar)
+            const headerTitle = document.querySelector('header h1');
+            headerTitle.textContent = `${name}`;
+            
+            // Update Chart Title
+            renderChart();
+        }
+
+        function updateSectionTitle(newTitle) {
+            if (data.sections.length > 0) {
+                data.sections[0].title = newTitle;
+                render(); 
+            }
+        }
+
+        function updateThemeColor(hex) {
+            const root = document.documentElement;
+            root.style.setProperty('--primary-green', hex);
+            root.style.setProperty('--dark-green', adjustColor(hex, -20));
+            root.style.setProperty('--court-green', adjustColor(hex, -40));
+        }
+
+        function adjustColor(color, amount) {
+            return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+        }
+        function updateChartTitleColor(hex) {
+            const root = document.documentElement;
+            root.style.setProperty('--chart-title-color', hex);
+            renderChart();
+        }
+        function updateSectionTitleColor(hex) {
+            const root = document.documentElement;
+            root.style.setProperty('--section-title-bg', hex);
+            renderChart();
+        }
+
+        function updatePresetLogo(key) {
+            selectedLogoKey = key;
+            const map = {
+                none: null,
+                football: '⚽️',
+                basket: '🏀',
+                tennis: '🎾',
+                badminton: '🏸',
+                rugby: '🏉',
+                natation: '🏊',
+                athletisme: '🏃',
+                cyclisme: '🚴',
+                handball: '🤾',
+                volley: '🏐',
+                briefcase: '💼',
+                tools: '🛠️',
+                gear: '⚙️',
+                construction: '🏗️',
+                worker: '👷',
+                microscope: '🔬',
+                computer: '🖥️',
+                factory: '🏭',
+                network: '🌐',
+                chart: '📊'
+            };
+            currentLogoEmoji = map[key] || null;
+            const posSelect = document.getElementById('select-logo-pos');
+            posSelect.style.display = (currentLogoEmoji || currentLogoImage) ? 'block' : 'none';
+            renderChart();
+        }
+        function handleCustomLogoUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentLogoImage = e.target.result;
+                    const prev = document.getElementById('custom-logo-preview');
+                    const cont = document.getElementById('custom-logo-preview-container');
+                    prev.src = currentLogoImage;
+                    cont.style.display = 'flex';
+                    const posSelect = document.getElementById('select-logo-pos');
+                    posSelect.style.display = 'block';
+                    renderChart();
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        function removeCustomLogo() {
+            currentLogoImage = null;
+            const cont = document.getElementById('custom-logo-preview-container');
+            const input = document.getElementById('input-custom-logo');
+            if (cont) cont.style.display = 'none';
+            if (input) input.value = '';
+            const posSelect = document.getElementById('select-logo-pos');
+            posSelect.style.display = (currentLogoEmoji) ? 'block' : 'none';
+            renderChart();
+        }
+        async function setSupabaseConfig() {
+            if (!supabaseClient) {
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+            await checkSession();
+            render();
+        }
+        async function checkSession() {
+            if (!supabaseClient) return;
+            const { data } = await supabaseClient.auth.getUser();
+            const user = data?.user || null;
+            if (user) {
+                const md = user.user_metadata || {};
+                currentFirstName = md.firstname || '';
+                currentLastName = md.lastname || '';
+                await fetchProfileStatus(user.id);
+            } else {
+                userStatus = null;
+                currentFirstName = '';
+                currentLastName = '';
+            }
+        }
+        async function doLogin() {
+            if (!supabaseClient) { await setSupabaseConfig(); }
+            const email = document.getElementById('modal-auth-email').value.trim();
+            const password = document.getElementById('modal-auth-password').value.trim();
+            if (!email || !password) { alert('Email et mot de passe requis.'); return; }
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) { alert('Connexion échouée.'); return; }
+            const user = data.user;
+            const md = user?.user_metadata || {};
+            currentFirstName = md.firstname || '';
+            currentLastName = md.lastname || '';
+            await fetchProfileStatus(user.id);
+            render();
+            renderHeaderActions();
+            closeAuthModal();
+        }
+        async function doRegister() {
+            if (!supabaseClient) { await setSupabaseConfig(); }
+            const email = document.getElementById('modal-auth-email').value.trim();
+            const password = document.getElementById('modal-auth-password').value.trim();
+            const firstname = document.getElementById('modal-firstname').value.trim();
+            const lastname = document.getElementById('modal-lastname').value.trim();
+            if (!email || !password) { alert('Email et mot de passe requis.'); return; }
+            const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { firstname, lastname } } });
+            if (error) { alert('Inscription échouée.'); return; }
+            const user = data.user;
+            userStatus = 'gratuit';
+            currentFirstName = firstname || '';
+            currentLastName = lastname || '';
+            try {
+                const { error: updErr } = await supabaseClient
+                    .from('profiles')
+                    .update({
+                        first_name: firstname || null,
+                        last_name: lastname || null
+                    })
+                    .eq('id', user.id);
+                if (updErr) {
+                    await supabaseClient.from('profiles').upsert({
+                        id: user.id,
+                        first_name: firstname || null,
+                        last_name: lastname || null
+                    });
+                }
+            } catch(_e) {}
+            render();
+            renderHeaderActions();
+            closeAuthModal();
+        }
+        async function doLogout() {
+            if (!supabaseClient) return;
+            await supabaseClient.auth.signOut();
+            userStatus = null;
+            currentFirstName = '';
+            currentLastName = '';
+            render();
+            renderHeaderActions();
+        }
+        async function fetchProfileStatus(userId) {
+            userStatus = 'gratuit';
+            try {
+                const { data, error } = await supabaseClient
+                    .from('profiles')
+                    .select('is_paid, is_asso, first_name, last_name')
+                    .eq('id', userId)
+                    .maybeSingle();
+                if (data && (data.is_paid || data.is_asso)) {
+                    userStatus = 'premium';
+                } else {
+                    userStatus = 'gratuit';
+                }
+                if (data) {
+                    if (data.first_name) currentFirstName = data.first_name;
+                    if (data.last_name) currentLastName = data.last_name;
+                }
+            } catch(e) {
+                userStatus = 'gratuit';
+            }
+        }
+        function openAuthModal(mode) {
+            authMode = mode;
+            document.getElementById('auth-modal-title').textContent = mode === 'login' ? 'Connexion' : 'Inscription';
+            document.getElementById('modal-auth-email').value = '';
+            document.getElementById('modal-auth-password').value = '';
+            document.getElementById('modal-firstname').value = '';
+            document.getElementById('modal-lastname').value = '';
+            document.getElementById('modal-firstname').style.display = mode === 'register' ? 'block' : 'none';
+            document.getElementById('modal-lastname').style.display = mode === 'register' ? 'block' : 'none';
+            document.getElementById('auth-modal-overlay').style.display = 'flex';
+        }
+        function closeAuthModal() {
+            authMode = null;
+            document.getElementById('auth-modal-overlay').style.display = 'none';
+        }
+        function applyAuth() {
+            if (authMode === 'login') doLogin();
+            else if (authMode === 'register') doRegister();
+        }
+        function renderHeaderActions() {
+            const el = document.getElementById('header-actions');
+            if (!el) return;
+            el.innerHTML = '';
+            const identity = document.createElement('div');
+            identity.className = 'header-identity';
+            const nameText = (currentFirstName || currentLastName) ? `${currentFirstName} ${currentLastName}`.trim() : 'Invité';
+            identity.textContent = nameText;
+            el.appendChild(identity);
+            if (userStatus) {
+                const assoBtn = document.createElement('button');
+                assoBtn.className = 'header-btn';
+                assoBtn.textContent = 'Association';
+                assoBtn.title = 'Prouver que je suis une asso';
+                assoBtn.onclick = () => openAssoModal();
+                el.appendChild(assoBtn);
+                const logoutBtn = document.createElement('button');
+                logoutBtn.className = 'header-btn';
+                logoutBtn.textContent = 'Déconnexion';
+                logoutBtn.onclick = () => doLogout();
+                el.appendChild(logoutBtn);
+            } else {
+                const registerBtn = document.createElement('button');
+                registerBtn.className = 'header-btn';
+                registerBtn.textContent = 'Inscription';
+                registerBtn.onclick = () => openAuthModal('register');
+                const loginBtn = document.createElement('button');
+                loginBtn.className = 'header-btn';
+                loginBtn.textContent = 'Connexion';
+                loginBtn.onclick = () => openAuthModal('login');
+                el.appendChild(registerBtn);
+                el.appendChild(loginBtn);
+            }
+        }
+        async function ensureAssoBucket() {
+            try {
+                const { data: buckets } = await supabaseClient.storage.listBuckets?.();
+                const exists = Array.isArray(buckets) && buckets.some(b => b.name === 'justificatifs');
+                if (!exists && supabaseClient.storage.createBucket) {
+                    await supabaseClient.storage.createBucket('justificatifs', { public: true });
+                }
+            } catch(e) { /* no-op */ }
+        }
+        function openAssoModal() {
+            document.getElementById('asso-rna').value = '';
+            document.getElementById('asso-name').value = '';
+            const f = document.getElementById('asso-official-pdf');
+            if (f) f.value = '';
+            document.getElementById('asso-error').style.display = 'none';
+            document.getElementById('asso-modal-overlay').style.display = 'flex';
+        }
+        function closeAssoModal() {
+            document.getElementById('asso-modal-overlay').style.display = 'none';
+        }
+        function handleOfficialPdfChange(input) {
+            const file = input.files && input.files[0];
+            const cont = document.getElementById('asso-official-preview');
+            const nameEl = document.getElementById('asso-official-filename');
+            if (file) {
+                nameEl.textContent = file.name;
+                cont.style.display = 'flex';
+            } else {
+                nameEl.textContent = '';
+                cont.style.display = 'none';
+            }
+        }
+        function removeOfficialPdf() {
+            const input = document.getElementById('asso-official-pdf');
+            const cont = document.getElementById('asso-official-preview');
+            const nameEl = document.getElementById('asso-official-filename');
+            if (input) input.value = '';
+            nameEl.textContent = '';
+            cont.style.display = 'none';
+        }
+        function generateTicketNumber() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let out = '';
+            for (let i = 0; i < 8; i++) out += chars[Math.floor(Math.random() * chars.length)];
+            return out;
+        }
+        async function sendAssoProof() {
+            const rna = document.getElementById('asso-rna').value.trim();
+            const name = document.getElementById('asso-name').value.trim();
+            const officialFile = document.getElementById('asso-official-pdf').files[0];
+            const err = document.getElementById('asso-error');
+            if (!rna || !name || !officialFile) { err.style.display = 'block'; return; }
+            err.style.display = 'none';
+            try {
+                const { data: userData } = await supabaseClient.auth.getUser();
+                const userId = userData?.user?.id || null;
+                const { data: exist } = await supabaseClient
+                    .from('profiles')
+                    .select('id')
+                    .eq('asso_name', name)
+                    .eq('rna_number', rna)
+                    .maybeSingle();
+                if (exist && exist.id && exist.id !== userId) {
+                    alert("Cette association est déjà associée à un compte");
+                    return;
+                }
+            } catch(_e) {}
+            const ticket = generateTicketNumber();
+            const lastUpper = (currentLastName || '').toUpperCase();
+            const temp = document.createElement('div');
+            temp.style.padding = '40px';
+            temp.style.fontFamily = 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+            temp.style.color = '#2c3e50';
+            temp.innerHTML = `
+                <div style="font-size:22px; font-weight:700; margin-bottom:10px;">Demande d'accès prémium Association</div>
+                <div style="font-size:15px; margin:8px 0 16px 0; color:#34495e;">
+                    Bonjour ${currentFirstName} ${lastUpper}, merci d'avoir réalisé votre demande d'accès prémium pour votre association.
+                </div>
+                <div style="font-size:16px; font-weight:600; margin:6px 0 6px 0; color:#2c3e50;">
+                    Récapitulatif de la demande
+                </div>
+                <div style="font-size:16px; margin:10px 0;">N° RNA : ${rna}</div>
+                <div style="font-size:16px; margin:10px 0;">Nom de l'Association : ${name}</div>
+                <div style="font-size:16px; margin:10px 0;">N° de demande : ${ticket}</div>
+                <div style="margin-top:24px; padding-top:12px; border-top:1px solid #ddd; font-size:14px; color:#555;">
+                    Nos équipes vont procéder à la vérification de votre demande dans les plus brefs délais
+                </div>
+                <div style="margin-top:12px; font-size:12px; color:#7f8c8d; display:flex; justify-content:space-between;">
+                    <span>Organigramme Editor</span>
+                    <span>© Corentin BLERVACQUE</span>
+                </div>
+            `;
+            document.body.appendChild(temp);
+            const filename = `Demande_Association_${ticket}.pdf`;
+            const opt = { margin: 10, filename, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+            let blob = null;
+            try {
+                blob = await html2pdf().set(opt).from(temp).outputPdf('blob');
+            } catch(_) {
+                try {
+                    const pdf = await html2pdf().set(opt).from(temp).toPdf().get('pdf');
+                    blob = new Blob([pdf.output('arraybuffer')], { type: 'application/pdf' });
+                } catch(__) {}
+            }
+            document.body.removeChild(temp);
+            if (blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+            let publicUrl = '';
+            let officialUrl = '';
+            if (blob && supabaseClient) {
+                try {
+                    await ensureAssoBucket();
+                    const path = `ticket_${ticket}.pdf`;
+                    const { error: upErr } = await supabaseClient.storage.from('justificatifs').upload(path, blob, { contentType: 'application/pdf', upsert: true });
+                    if (!upErr) {
+                        const { data: pub } = supabaseClient.storage.from('justificatifs').getPublicUrl(path);
+                        publicUrl = pub?.publicUrl || '';
+                    }
+                } catch(e) { /* no-op */ }
+            }
+            if (officialFile && supabaseClient) {
+                try {
+                    const { data: buckets } = await supabaseClient.storage.listBuckets?.();
+                    const exists = Array.isArray(buckets) && buckets.some(b => b.name === 'Justificatif_officiel');
+                    if (!exists && supabaseClient.storage.createBucket) {
+                        await supabaseClient.storage.createBucket('Justificatif_officiel', { public: true });
+                    }
+                    const offName = `ticket_${ticket}.pdf`;
+                    const { error: offErr } = await supabaseClient.storage.from('Justificatif_officiel').upload(offName, officialFile, { contentType: 'application/pdf', upsert: true });
+                    if (!offErr) {
+                        const { data: offPub } = supabaseClient.storage.from('Justificatif_officiel').getPublicUrl(offName);
+                        officialUrl = offPub?.publicUrl || '';
+                    }
+                } catch(e) { /* no-op */ }
+            }
+            if (supabaseClient) {
+                try {
+                    const { data: userData } = await supabaseClient.auth.getUser();
+                    const userId = userData?.user?.id || null;
+                    if (userId) {
+                        await supabaseClient
+                            .from('profiles')
+                            .update({
+                                asso_name: name,
+                                rna_number: rna,
+                                ticket_number: ticket,
+                                document_url: publicUrl,
+                                Officiel_URL: officialUrl
+                            })
+                            .eq('id', userId);
+                    }
+                    await supabaseClient.from('asso_requests').insert({
+                        rna_number: rna,
+                        asso_name: name,
+                        justificatif_url: publicUrl,
+                        ticket_number: ticket,
+                        user_id: userId
+                    });
+                } catch(e) { /* no-op */ }
+            }
+            closeAssoModal();
+        }
+        function renderHeaderTools() {
+            const el = document.getElementById('header-tools');
+            if (!el) return;
+            el.innerHTML = '';
+            const btnPdf = document.createElement('button');
+            btnPdf.className = 'tool-btn';
+            btnPdf.textContent = 'PDF';
+            btnPdf.onclick = () => exportPDF();
+            const btnSave = document.createElement('button');
+            btnSave.className = 'tool-btn';
+            btnSave.textContent = 'Enregistrer';
+            btnSave.onclick = () => saveOrganigram();
+            const btnOpen = document.createElement('button');
+            btnOpen.className = 'tool-btn';
+            btnOpen.textContent = 'Ouvrir';
+            btnOpen.onclick = () => openOrganigram();
+            const btnNew = document.createElement('button');
+            btnNew.className = 'tool-btn';
+            btnNew.textContent = 'Nouveau';
+            btnNew.onclick = () => newOrganigram();
+            el.appendChild(btnPdf);
+            el.appendChild(btnSave);
+            el.appendChild(btnOpen);
+            el.appendChild(btnNew);
+        }
+
+        function updateLogoPosition(pos) {
+            logoPosition = pos;
+            renderChart();
+        }
+
+        function updateNameFormat(format) {
+            nameFormat = format;
+            renderChart();
+        }
+
+        // --- Core Logic ---
+
+        function addLine() {
+            // For now, we only target the first section "Bureau"
+            const section = data.sections[0];
+            const nextNum = section.lines.length + 1;
+            
+            section.lines.push({
+                id: Date.now(),
+                name: `Ligne ${nextNum}`,
+                members: []
+            });
+
+            render();
+        }
+
+        function addMember() {
+            const lastname = document.getElementById('input-lastname').value.trim();
+            const firstname = document.getElementById('input-firstname').value.trim();
+            const role = document.getElementById('input-role').value.trim();
+            const lineId = parseInt(document.getElementById('select-level').value);
+
+            if (!lastname || !firstname || !role) {
+                alert("Veuillez remplir tous les champs du membre.");
+                return;
+            }
+
+            // Find line across all sections
+            let targetLine = null;
+            data.sections.forEach(sec => {
+                const line = sec.lines.find(l => l.id === lineId);
+                if (line) targetLine = line;
+            });
+
+            if (!targetLine) {
+                alert("Erreur : Ligne introuvable.");
+                return;
+            }
+
+            targetLine.members.push({
+                id: Date.now(),
+                lastname: lastname,
+                firstname: firstname,
+                role: role
+            });
+
+            // Clear inputs
+            document.getElementById('input-lastname').value = '';
+            document.getElementById('input-firstname').value = '';
+            document.getElementById('input-role').value = '';
+
+            render();
+        }
+
+        function removeLine(lineId) {
+            if(confirm("Voulez-vous vraiment supprimer cette ligne et tous ses membres ?")) {
+                data.sections.forEach(sec => {
+                    sec.lines = sec.lines.filter(l => l.id !== lineId);
+                });
+                render();
+            }
+        }
+
+        function removeMember(lineId, memberId) {
+            data.sections.forEach(sec => {
+                const line = sec.lines.find(l => l.id === lineId);
+                if (line) {
+                    line.members = line.members.filter(m => m.id !== memberId);
+                }
+            });
+            render();
+        }
+
+        function resetChart() {
+            if(confirm("Êtes-vous sûr de vouloir tout effacer ?")) {
+                // Reset to one empty section
+                data.sections = [
+                    {
+                        id: 1,
+                        title: "Organigramme du Bureau",
+                        lines: [ { id: Date.now(), name: "Ligne 1", members: [] } ]
+                    }
+                ];
+                render();
+            }
+        }
+        function newOrganigram() {
+            if(confirm("Créer un nouvel organigramme et réinitialiser tous les paramètres ?")) {
+                data.sections = [
+                    {
+                        id: 1,
+                        title: "Organigramme du Bureau",
+                        lines: [ { id: Date.now(), name: "Ligne 1", members: [] } ]
+                    }
+                ];
+                currentLogoEmoji = null;
+                currentLogoImage = null;
+                logoPosition = 'corners';
+                nameFormat = 'last-first';
+                selectedLogoKey = 'none';
+                document.getElementById('input-club-name').value = 'Mon Organigramme';
+                document.getElementById('input-section-title').value = data.sections[0].title;
+                const selectPos = document.getElementById('select-logo-pos');
+                const preset = document.getElementById('select-preset-logo');
+                const customPrev = document.getElementById('custom-logo-preview-container');
+                const customInput = document.getElementById('input-custom-logo');
+                if (selectPos) selectPos.style.display = 'none';
+                if (preset) preset.value = 'none';
+                if (customPrev) customPrev.style.display = 'none';
+                if (customInput) customInput.value = '';
+                render();
+            }
+        }
+        function saveOrganigram() {
+            const clubName = document.getElementById('input-club-name').value;
+            const payload = {
+                data,
+                currentLogoEmoji,
+                currentLogoImage,
+                logoPosition,
+                nameFormat,
+                clubName,
+                selectedLogoKey
+            };
+            const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'Mon Organigramme.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+        }
+        function openOrganigram() {
+            const input = document.getElementById('open-file');
+            input.onchange = function(ev) {
+                const file = ev.target.files && ev.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const obj = JSON.parse(e.target.result);
+                        if (obj && obj.data && obj.data.sections) {
+                            data = obj.data;
+                            currentLogoEmoji = obj.currentLogoEmoji || null;
+                            currentLogoImage = obj.currentLogoImage || null;
+                            logoPosition = obj.logoPosition || 'corners';
+                            nameFormat = obj.nameFormat || 'last-first';
+                            const clubName = obj.clubName || 'Mon Organigramme';
+                            selectedLogoKey = obj.selectedLogoKey || (currentLogoEmoji ? 'custom' : 'none');
+                            document.getElementById('input-club-name').value = clubName;
+                            document.getElementById('input-section-title').value = data.sections[0]?.title || '';
+                            const selectPos = document.getElementById('select-logo-pos');
+                            const preset = document.getElementById('select-preset-logo');
+                            if (preset) preset.value = selectedLogoKey !== 'custom' ? selectedLogoKey : 'none';
+                            if (selectPos) selectPos.style.display = (currentLogoEmoji || currentLogoImage) ? 'block' : 'none';
+                            const prev = document.getElementById('custom-logo-preview-container');
+                            const imgPrev = document.getElementById('custom-logo-preview');
+                            if (currentLogoImage) {
+                                imgPrev.src = currentLogoImage;
+                                prev.style.display = 'flex';
+                            } else {
+                                prev.style.display = 'none';
+                            }
+                            render();
+                        } else {
+                            alert('Fichier invalide.');
+                        }
+                    } catch (err) {
+                        alert('Erreur de lecture du fichier.');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+        let editingLineId = null;
+        let editingMemberId = null;
+        function openEditMember(lineId, memberId) {
+            editingLineId = lineId;
+            editingMemberId = memberId;
+            let member = null;
+            data.sections.forEach(sec => {
+                const line = sec.lines.find(l => l.id === lineId);
+                if (line) {
+                    member = line.members.find(m => m.id === memberId) || member;
+                }
+            });
+            if (!member) return;
+            document.getElementById('edit-lastname').value = member.lastname;
+            document.getElementById('edit-firstname').value = member.firstname;
+            document.getElementById('edit-role').value = member.role;
+            const overlay = document.getElementById('edit-modal-overlay');
+            overlay.style.display = 'flex';
+        }
+        function cancelEditMember() {
+            editingLineId = null;
+            editingMemberId = null;
+            const overlay = document.getElementById('edit-modal-overlay');
+            overlay.style.display = 'none';
+        }
+        function applyEditMember() {
+            const ln = document.getElementById('edit-lastname').value.trim();
+            const fn = document.getElementById('edit-firstname').value.trim();
+            const rl = document.getElementById('edit-role').value.trim();
+            if (!ln || !fn || !rl) {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
+            data.sections.forEach(sec => {
+                const line = sec.lines.find(l => l.id === editingLineId);
+                if (line) {
+                    const member = line.members.find(m => m.id === editingMemberId);
+                    if (member) {
+                        member.lastname = ln;
+                        member.firstname = fn;
+                        member.role = rl;
+                    }
+                }
+            });
+            cancelEditMember();
+            render();
+        }
+
+        function exportPDF() {
+            const element = document.getElementById('chart-container');
+            
+            // Show title temporarily
+            const title = element.querySelector('.export-title');
+            if(title) title.style.display = 'block';
+
+            // Temporarily modify styles to ensure full capture (fix cut-off)
+            const originalOverflow = element.style.overflow;
+            const originalHeight = element.style.height;
+            
+            element.style.overflow = 'visible'; // Allow full expansion
+            element.style.height = 'auto';      // Remove height limit
+
+            // Hide delete buttons
+            const deleteBtns = element.querySelectorAll('.delete-btn, .delete-line-btn');
+            deleteBtns.forEach(btn => btn.style.display = 'none');
+            
+            // Hide account badges during export
+            const badges = element.querySelectorAll('.account-badge');
+            badges.forEach(b => b.style.display = 'none');
+
+            const opt = {
+                margin: 10,
+                filename: 'Mon Organigramme.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+
+            // New Promise-based usage:
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Restore styles
+                element.style.overflow = originalOverflow;
+                element.style.height = originalHeight;
+                
+                // Restore buttons (reset inline style to let CSS hover work)
+                deleteBtns.forEach(btn => btn.style.display = '');
+                
+                // Restore badges
+                badges.forEach(b => b.style.display = '');
+
+                // Hide title again
+                if(title) title.style.display = 'none';
+            });
+        }
+
+        // --- Rendering ---
+
+        function render() {
+            renderLevelsSelect();
+            renderChart();
+        }
+
+        function renderLevelsSelect() {
+            const select = document.getElementById('select-level');
+            const currentVal = select.value;
+            select.innerHTML = '';
+
+            data.sections.forEach(section => {
+                // Optional: Add optgroup if multiple sections
+                // const group = document.createElement('optgroup');
+                // group.label = section.title;
+                
+                section.lines.forEach(line => {
+                    const option = document.createElement('option');
+                    option.value = line.id;
+                    option.textContent = `${section.title} - ${line.name}`;
+                    select.appendChild(option);
+                });
+            });
+
+            // Restore selection if possible
+            // Simple check: does the value exist in new options?
+            let exists = false;
+            for(let i=0; i<select.options.length; i++){
+                if(select.options[i].value == currentVal) exists = true;
+            }
+
+            if (currentVal && exists) {
+                select.value = currentVal;
+            }
+        }
+
+        function renderChart() {
+            const container = document.getElementById('chart-container');
+            container.innerHTML = '';
+
+            // Header Container (Title + Logos)
+            const headerContainer = document.createElement('div');
+            headerContainer.className = 'chart-header-container';
+
+            // Title
+            const clubName = document.getElementById('input-club-name').value;
+            const titleEl = document.createElement('div');
+            titleEl.className = 'chart-title';
+            titleEl.textContent = clubName;
+            
+            // Add Title to Header (Order depends on positioning logic below)
+            headerContainer.appendChild(titleEl);
+
+            // Add Logos based on Position
+            if (currentLogoImage || currentLogoEmoji) {
+                if (logoPosition === 'title') {
+                    // Flanking the title
+                    let leftEl, rightEl;
+                    if (currentLogoImage) {
+                        leftEl = document.createElement('img');
+                        leftEl.src = currentLogoImage;
+                        leftEl.className = 'logo-img';
+                        rightEl = document.createElement('img');
+                        rightEl.src = currentLogoImage;
+                        rightEl.className = 'logo-img';
+                    } else {
+                        leftEl = document.createElement('span');
+                        leftEl.className = 'logo-emoji';
+                        leftEl.textContent = currentLogoEmoji;
+                        rightEl = document.createElement('span');
+                        rightEl.className = 'logo-emoji';
+                        rightEl.textContent = currentLogoEmoji;
+                    }
+
+                    // Re-arrange: Img Title Img
+                    headerContainer.innerHTML = '';
+                    headerContainer.appendChild(leftEl);
+                    headerContainer.appendChild(titleEl);
+                    headerContainer.appendChild(rightEl);
+                } 
+                else if (logoPosition === 'corners') {
+                    // Absolute Corners
+                    let leftEl, rightEl;
+                    if (currentLogoImage) {
+                        leftEl = document.createElement('img');
+                        leftEl.src = currentLogoImage;
+                        leftEl.className = 'logo-img pos-corner left';
+                        rightEl = document.createElement('img');
+                        rightEl.src = currentLogoImage;
+                        rightEl.className = 'logo-img pos-corner right';
+                    } else {
+                        leftEl = document.createElement('span');
+                        leftEl.className = 'logo-emoji pos-corner left';
+                        leftEl.textContent = currentLogoEmoji;
+                        rightEl = document.createElement('span');
+                        rightEl.className = 'logo-emoji pos-corner right';
+                        rightEl.textContent = currentLogoEmoji;
+                    }
+                    headerContainer.appendChild(leftEl);
+                    headerContainer.appendChild(rightEl);
+                }
+                else if (logoPosition === 'bottom') {
+                    // Absolute Bottom (of container, not header)
+                    // We attach to container later
+                }
+            }
+
+            container.appendChild(headerContainer);
+            if (userStatus === 'gratuit' || userStatus === 'premium') {
+                const badge = document.createElement('div');
+                badge.className = 'account-badge ' + (userStatus === 'premium' ? 'badge-premium' : 'badge-free');
+                badge.textContent = userStatus === 'premium' ? '⭐ Prémium' : 'Gratuit';
+                headerContainer.appendChild(badge);
+            }
+
+            // Render Sections
+            if (data.sections.length === 0) {
+                container.innerHTML += '<div>Aucune section.</div>';
+                // Don't return, as we might need to render bottom logos
+            } else {
+                data.sections.forEach(section => {
+                    // Create Bubble Container
+                    const bubble = document.createElement('div');
+                    bubble.className = 'section-bubble';
+                    
+                    const title = document.createElement('div');
+                    title.className = 'section-title';
+                    title.textContent = section.title;
+                    bubble.appendChild(title);
+
+                    // Render Lines
+                    if (section.lines.length === 0) {
+                        const empty = document.createElement('div');
+                        empty.style.color = '#999';
+                        empty.style.textAlign = 'center';
+                        empty.textContent = "Aucune ligne dans cette section.";
+                        bubble.appendChild(empty);
+                    } else {
+                        section.lines.forEach(line => {
+                            const row = document.createElement('div');
+                            row.className = 'level-row';
+                            
+                            const header = document.createElement('div');
+                            header.className = 'level-header';
+                            header.textContent = line.name;
+                            row.appendChild(header);
+
+                            // Delete Line Button (Visible on hover)
+                            const deleteLineBtn = document.createElement('button');
+                            deleteLineBtn.className = 'delete-line-btn';
+                            deleteLineBtn.innerHTML = '🗑️'; 
+                            deleteLineBtn.title = "Supprimer la ligne";
+                            deleteLineBtn.onclick = (e) => {
+                                e.stopPropagation();
+                                removeLine(line.id);
+                            };
+                            row.appendChild(deleteLineBtn);
+
+                            const membersContainer = document.createElement('div');
+                            membersContainer.className = 'members-container';
+                            membersContainer.dataset.lineId = line.id;
+                            membersContainer.addEventListener('dragenter', function(e){ e.preventDefault(); this.classList.add('drag-over'); });
+                            membersContainer.addEventListener('dragover', function(e){ e.preventDefault(); this.classList.add('drag-over'); });
+                            membersContainer.addEventListener('dragleave', function(){ this.classList.remove('drag-over'); });
+                            membersContainer.addEventListener('drop', function(e){
+                                e.preventDefault();
+                                this.classList.remove('drag-over');
+                                try {
+                                    const payload = JSON.parse(e.dataTransfer.getData('text/plain'));
+                                    const fromLineId = payload.fromLineId;
+                                    const memberId = payload.memberId;
+                                    const toLineId = parseInt(this.dataset.lineId);
+                                    if (!memberId || !fromLineId || !toLineId) return;
+                                    if (fromLineId === toLineId) return;
+                                    let moved = null;
+                                    data.sections.forEach(sec => {
+                                        const fromLine = sec.lines.find(l => l.id === fromLineId);
+                                        if (fromLine) {
+                                            const idx = fromLine.members.findIndex(m => m.id === memberId);
+                                            if (idx !== -1) {
+                                                moved = fromLine.members.splice(idx, 1)[0];
+                                            }
+                                        }
+                                    });
+                                    if (moved) {
+                                        data.sections.forEach(sec => {
+                                            const toLine = sec.lines.find(l => l.id === toLineId);
+                                            if (toLine) {
+                                                toLine.members.push(moved);
+                                            }
+                                        });
+                                        render();
+                                    }
+                                } catch(_e){}
+                            });
+
+                            line.members.forEach(member => {
+                                const card = document.createElement('div');
+                                card.className = 'member-card';
+                                card.draggable = true;
+                                card.addEventListener('dragstart', function(e){
+                                    e.dataTransfer.setData('text/plain', JSON.stringify({ memberId: member.id, fromLineId: line.id }));
+                                });
+                                
+                                const nameDiv = document.createElement('div');
+                                nameDiv.className = 'member-name';
+                                if (nameFormat === 'first-last') {
+                                    nameDiv.textContent = `${member.firstname} ${member.lastname}`;
+                                } else {
+                                    nameDiv.textContent = `${member.lastname} ${member.firstname}`;
+                                }
+
+                                const roleDiv = document.createElement('div');
+                                roleDiv.className = 'member-role';
+                                roleDiv.textContent = member.role;
+                                
+                                const photoInput = document.createElement('input');
+                                photoInput.type = 'file';
+                                photoInput.accept = 'image/*';
+                                photoInput.style.display = 'none';
+                                photoInput.onchange = function(ev) {
+                                    const file = ev.target.files && ev.target.files[0];
+                                    if (!file) return;
+                                    const reader = new FileReader();
+                                    reader.onload = function(e) {
+                                        member.photo = e.target.result;
+                                        render();
+                                    };
+                                    reader.readAsDataURL(file);
+                                };
+                                
+                                if (member.photo) {
+                                    const photoEl = document.createElement('img');
+                                    photoEl.className = 'member-photo';
+                                    photoEl.src = member.photo;
+                                    card.appendChild(photoEl);
+                                }
+                                
+                                const actions = document.createElement('div');
+                                actions.className = 'member-actions';
+                                const editButton = document.createElement('button');
+                                editButton.className = 'action-btn edit';
+                                editButton.textContent = '✎';
+                                editButton.title = 'Modifier';
+                                editButton.onclick = () => openEditMember(line.id, member.id);
+                                const deleteButton = document.createElement('button');
+                                deleteButton.className = 'action-btn delete';
+                                deleteButton.textContent = '×';
+                                deleteButton.title = 'Supprimer';
+                                deleteButton.onclick = () => removeMember(line.id, member.id);
+                                const photoButton = document.createElement('button');
+                                photoButton.className = 'action-btn photo';
+                                photoButton.textContent = '🖼️';
+                                photoButton.title = 'Ajouter photo';
+                                photoButton.onclick = () => photoInput.click();
+                                actions.appendChild(editButton);
+                                actions.appendChild(deleteButton);
+                                actions.appendChild(photoButton);
+
+                                card.appendChild(nameDiv);
+                                card.appendChild(roleDiv);
+                                card.appendChild(actions);
+                                card.appendChild(photoInput);
+
+                                membersContainer.appendChild(card);
+                            });
+
+                            row.appendChild(membersContainer);
+                            bubble.appendChild(row);
+                        });
+                    }
+                    container.appendChild(bubble);
+                });
+            }
+
+            // Render Bottom Logos if needed
+            if ((currentLogoImage || currentLogoEmoji) && logoPosition === 'bottom') {
+                let leftEl, rightEl;
+                if (currentLogoImage) {
+                    leftEl = document.createElement('img');
+                    leftEl.src = currentLogoImage;
+                    leftEl.className = 'logo-img pos-bottom left';
+                    rightEl = document.createElement('img');
+                    rightEl.src = currentLogoImage;
+                    rightEl.className = 'logo-img pos-bottom right';
+                } else {
+                    leftEl = document.createElement('span');
+                    leftEl.className = 'logo-emoji pos-bottom left';
+                    leftEl.textContent = currentLogoEmoji;
+                    rightEl = document.createElement('span');
+                    rightEl.className = 'logo-emoji pos-bottom right';
+                    rightEl.textContent = currentLogoEmoji;
+                }
+                container.appendChild(leftEl);
+                container.appendChild(rightEl);
+            }
+
+            if (userStatus !== 'premium') {
+                const watermark = document.createElement('div');
+                watermark.className = 'watermark';
+                watermark.innerHTML = 'Corentin BLERVACQUE<br/>free version';
+                container.appendChild(watermark);
+            }
+        }
+
+        // Run
+        init();
+
+    </script>
+</body>
+</html>
