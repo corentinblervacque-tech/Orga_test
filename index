@@ -13,6 +13,8 @@
             --line-color: #ecf0f1;
             --text-main: #2c3e50;
             --bg-color: #f7f9fc;
+            --chart-title-color: #1a472a;
+            --section-title-bg: var(--primary-green);
         }
 
         body {
@@ -32,6 +34,7 @@
             padding: 20px;
             text-align: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: relative;
         }
 
         h1 {
@@ -41,6 +44,70 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+        }
+        .header-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-btn {
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: #ffffff;
+            color: var(--court-green);
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1px solid #e6eaef;
+            cursor: pointer;
+            width: auto;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .header-btn:hover {
+            background: #f7f9fc;
+        }
+        .header-identity {
+            background: #ffffff;
+            color: var(--court-green);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #e6eaef;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .header-tools {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tool-btn {
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: #ffffff;
+            color: var(--court-green);
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1px solid #e6eaef;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            cursor: pointer;
+            width: auto;
+        }
+        .tool-btn:hover {
+            background: #f7f9fc;
+        }
+        .color-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
         }
 
         .container {
@@ -150,7 +217,7 @@
             position: absolute;
             top: -15px;
             left: 30px;
-            background-color: var(--primary-green);
+            background-color: var(--section-title-bg);
             color: white;
             padding: 5px 20px;
             border-radius: 20px;
@@ -331,7 +398,7 @@
         .chart-title {
             text-align: center;
             font-size: 2rem;
-            color: var(--court-green);
+            color: var(--chart-title-color);
             font-weight: bold;
             margin: 0 20px;
         }
@@ -346,6 +413,29 @@
             font-size: 60px;
             line-height: 1;
             display: inline-block;
+        }
+        .account-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .badge-free {
+            background: #ecf9f1;
+            color: #16a085;
+            border: 1px solid #16a085;
+        }
+        .badge-premium {
+            background: #fff8e6;
+            color: #f1c40f;
+            border: 1px solid #f1c40f;
         }
 
         /* Positioning Classes */
@@ -388,22 +478,31 @@
 
         .watermark {
             position: absolute;
-            right: 20px;
-            bottom: 20px;
-            color: rgba(44,62,80,0.5);
-            font-size: 12px;
-            letter-spacing: 0.5px;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(44,62,80,0.15);
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: 1px;
             user-select: none;
             pointer-events: none;
+            transform: rotate(-18deg);
+            text-align: center;
         }
 
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
     <header>
         <h1>Organigramme Club</h1>
+        <div id="header-actions" class="header-actions"></div>
+        <div id="header-tools" class="header-tools"></div>
+        <input type="file" id="open-file" accept="application/json" style="display:none;">
     </header>
 
     <div class="container">
@@ -442,7 +541,7 @@
 
             <!-- Add Level -->
             <div class="control-group">
-                <div class="control-title">📂 Nouvelle Ligne</div>
+                <div class="control-title">➕ Nouvelle Ligne</div>
                 <button class="secondary" onclick="addLine()">Ajouter une ligne à la section</button>
             </div>
 
@@ -453,8 +552,14 @@
                 <label style="font-size: 0.9rem; color:#666;">Nom du Club :</label>
                 <input type="text" id="input-club-name" value="Mon Organigramme" oninput="updateClubName(this.value)" placeholder="Nom du club" />
 
-                <label style="font-size: 0.9rem; color:#666;">Couleur Principale :</label>
-                <input type="color" id="input-color" value="#2ecc71" onchange="updateThemeColor(this.value)" style="height:40px; cursor:pointer;" />
+                <label style="font-size: 0.9rem; color:#666;">Couleurs :</label>
+                <div class="color-row">
+                    <input type="color" id="input-color" value="#2ecc71" onchange="updateThemeColor(this.value)" style="height:28px; width:36px; cursor:pointer;" title="Couleur principale" />
+                    <span style="font-size:0.85rem; color:#666;">Titre club</span>
+                    <input type="color" id="input-chart-title-color" value="#1a472a" onchange="updateChartTitleColor(this.value)" style="height:28px; width:36px; cursor:pointer;" title="Couleur du titre club" />
+                    <span style="font-size:0.85rem; color:#666;">Titre section</span>
+                    <input type="color" id="input-section-title-color" value="#2ecc71" onchange="updateSectionTitleColor(this.value)" style="height:28px; width:36px; cursor:pointer;" title="Couleur du titre section" />
+                </div>
 
                 <label style="font-size: 0.9rem; color:#666;">Logo prédéfini :</label>
                 <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:10px;">
@@ -512,16 +617,10 @@
                 <input type="text" id="input-section-title" value="Organigramme du Bureau" oninput="updateSectionTitle(this.value)" />
             </div>
 
+            <!-- Connexion controls removed (now in header) -->
+
             <!-- Actions -->
-            <div class="control-group">
-                <div class="control-title">⚙️ Actions</div>
-                <button onclick="exportPDF()" style="background-color: #3498db; margin-bottom: 10px;">📄 Exporter en PDF</button>
-                <button style="background-color: #16a085; margin-bottom: 10px;" onclick="saveOrganigram()">💾 Enregistrer Organigramme</button>
-                <button style="background-color: #8e44ad; margin-bottom: 10px;" onclick="openOrganigram()">📂 Ouvrir Organigramme</button>
-                <input type="file" id="open-file" accept="application/json" style="display:none;">
-                <button style="background-color: #f39c12; margin-bottom: 10px;" onclick="newOrganigram()">🆕 Nouvel Organigramme</button>
-                <button style="background-color: #e74c3c;" onclick="resetChart()">Tout effacer</button>
-            </div>
+            <!-- Actions moved to header -->
             
             <!-- Footer / Copyright -->
             <div style="margin-top: auto; text-align: center; font-size: 0.8rem; color: #bdc3c7; padding-top: 20px;">
@@ -535,6 +634,19 @@
             <!-- Dynamic Content Here -->
         </main>
     </div>
+    <div id="auth-modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
+        <div style="background:#fff; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.2); padding:20px; width:320px; max-width:90vw;">
+            <div id="auth-modal-title" style="font-weight:bold; color:var(--court-green); margin-bottom:10px; text-align:center;">Connexion</div>
+            <input type="email" id="modal-auth-email" placeholder="Email">
+            <input type="password" id="modal-auth-password" placeholder="Mot de passe">
+            <input type="text" id="modal-firstname" placeholder="Prénom" style="display:none;">
+            <input type="text" id="modal-lastname" placeholder="Nom" style="display:none;">
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button onclick="applyAuth()">Valider</button>
+                <button class="secondary" onclick="closeAuthModal()">Annuler</button>
+            </div>
+        </div>
+    </div>
     <div id="edit-modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
         <div style="background:#fff; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.2); padding:20px; width:320px; max-width:90vw;">
             <div style="font-weight:bold; color:var(--court-green); margin-bottom:10px; text-align:center;">Modifier le membre</div>
@@ -544,6 +656,26 @@
             <div style="display:flex; gap:10px; margin-top:10px;">
                 <button onclick="applyEditMember()">Enregistrer</button>
                 <button class="secondary" onclick="cancelEditMember()">Annuler</button>
+            </div>
+        </div>
+    </div>
+    <div id="asso-modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1000;">
+        <div style="background:#fff; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.2); padding:20px; width:360px; max-width:90vw;">
+            <div style="font-weight:bold; color:var(--court-green); margin-bottom:10px; text-align:center;">Prouver que je suis une asso</div>
+            <input type="text" id="asso-rna" placeholder="N° RNA">
+            <input type="text" id="asso-name" placeholder="Nom de l’Association">
+            <label for="asso-official-pdf" style="display:block; background:#ffffff; color:var(--court-green); padding:8px 12px; border-radius:10px; border:1px solid #e6eaef; box-shadow:0 1px 2px rgba(0,0,0,0.04); text-align:center; cursor:pointer; font-weight:600; font-size:0.9rem; margin-top:8px;">
+                Document Preuve Officiel
+            </label>
+            <input type="file" id="asso-official-pdf" accept="application/pdf" style="display:none;" onchange="handleOfficialPdfChange(this)">
+            <div id="asso-official-preview" style="display:none; align-items:center; gap:10px; background:#f7f9fc; padding:6px 8px; border-radius:10px; border:1px solid #e6eaef; margin-top:8px;">
+                <span id="asso-official-filename" style="font-size:0.85rem; color:#555; flex:1;"></span>
+                <button onclick="removeOfficialPdf()" style="background:none; color:#e74c3c; border:none; padding:0; width:auto; font-size:1.2rem; cursor:pointer;" title="Supprimer le document">&times;</button>
+            </div>
+            <div id="asso-error" style="display:none; color:#e74c3c; font-weight:600; margin-top:4px;">Renseignez toutes les informations</div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button onclick="sendAssoProof()">Envoyer</button>
+                <button class="secondary" onclick="closeAssoModal()">Annuler</button>
             </div>
         </div>
     </div>
@@ -570,13 +702,37 @@
         let selectedLogoKey = 'none';
         let currentLogoEmoji = null;
         let currentLogoImage = null;
+        let supabaseClient = null;
+        let userStatus = null;
+        let authMode = null;
+        const SUPABASE_URL = 'https://uwentorucwxfzczrhwrk.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_NJ7hWqf9XlhnyinZHWBkaA_8aywC_iC';
+        let currentFirstName = '';
+        let currentLastName = '';
 
         // Initialize
         function init() {
-            // Set Initial Values based on Data
             document.getElementById('input-section-title').value = data.sections[0].title;
-            updateClubName("Mon Organigramme"); // Default
+            updateClubName("Mon Organigramme");
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            supabaseClient.auth.onAuthStateChange((_event, session) => {
+                if (session && session.user) {
+                    const md = session.user.user_metadata || {};
+                    currentFirstName = md.firstname || '';
+                    currentLastName = md.lastname || '';
+                    fetchProfileStatus(session.user.id).then(() => { render(); renderHeaderActions(); });
+                } else {
+                    userStatus = null;
+                    currentFirstName = '';
+                    currentLastName = '';
+                    render();
+                    renderHeaderActions();
+                }
+            });
+            checkSession();
             render();
+            renderHeaderActions();
+            renderHeaderTools();
         }
 
         // --- Customization Logic ---
@@ -606,6 +762,16 @@
 
         function adjustColor(color, amount) {
             return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+        }
+        function updateChartTitleColor(hex) {
+            const root = document.documentElement;
+            root.style.setProperty('--chart-title-color', hex);
+            renderChart();
+        }
+        function updateSectionTitleColor(hex) {
+            const root = document.documentElement;
+            root.style.setProperty('--section-title-bg', hex);
+            renderChart();
         }
 
         function updatePresetLogo(key) {
@@ -663,6 +829,355 @@
             const posSelect = document.getElementById('select-logo-pos');
             posSelect.style.display = (currentLogoEmoji) ? 'block' : 'none';
             renderChart();
+        }
+        async function setSupabaseConfig() {
+            if (!supabaseClient) {
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+            await checkSession();
+            render();
+        }
+        async function checkSession() {
+            if (!supabaseClient) return;
+            const { data } = await supabaseClient.auth.getUser();
+            const user = data?.user || null;
+            if (user) {
+                const md = user.user_metadata || {};
+                currentFirstName = md.firstname || '';
+                currentLastName = md.lastname || '';
+                await fetchProfileStatus(user.id);
+            } else {
+                userStatus = null;
+                currentFirstName = '';
+                currentLastName = '';
+            }
+        }
+        async function doLogin() {
+            if (!supabaseClient) { await setSupabaseConfig(); }
+            const email = document.getElementById('modal-auth-email').value.trim();
+            const password = document.getElementById('modal-auth-password').value.trim();
+            if (!email || !password) { alert('Email et mot de passe requis.'); return; }
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) { alert('Connexion échouée.'); return; }
+            const user = data.user;
+            const md = user?.user_metadata || {};
+            currentFirstName = md.firstname || '';
+            currentLastName = md.lastname || '';
+            await fetchProfileStatus(user.id);
+            render();
+            renderHeaderActions();
+            closeAuthModal();
+        }
+        async function doRegister() {
+            if (!supabaseClient) { await setSupabaseConfig(); }
+            const email = document.getElementById('modal-auth-email').value.trim();
+            const password = document.getElementById('modal-auth-password').value.trim();
+            const firstname = document.getElementById('modal-firstname').value.trim();
+            const lastname = document.getElementById('modal-lastname').value.trim();
+            if (!email || !password) { alert('Email et mot de passe requis.'); return; }
+            const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { firstname, lastname } } });
+            if (error) { alert('Inscription échouée.'); return; }
+            const user = data.user;
+            userStatus = 'gratuit';
+            currentFirstName = firstname || '';
+            currentLastName = lastname || '';
+            try {
+                const { error: updErr } = await supabaseClient
+                    .from('profiles')
+                    .update({
+                        first_name: firstname || null,
+                        last_name: lastname || null
+                    })
+                    .eq('id', user.id);
+                if (updErr) {
+                    await supabaseClient.from('profiles').upsert({
+                        id: user.id,
+                        first_name: firstname || null,
+                        last_name: lastname || null
+                    });
+                }
+            } catch(_e) {}
+            render();
+            renderHeaderActions();
+            closeAuthModal();
+        }
+        async function doLogout() {
+            if (!supabaseClient) return;
+            await supabaseClient.auth.signOut();
+            userStatus = null;
+            currentFirstName = '';
+            currentLastName = '';
+            render();
+            renderHeaderActions();
+        }
+        async function fetchProfileStatus(userId) {
+            userStatus = 'gratuit';
+            try {
+                const { data, error } = await supabaseClient
+                    .from('profiles')
+                    .select('is_paid, is_asso, first_name, last_name')
+                    .eq('id', userId)
+                    .maybeSingle();
+                if (data && (data.is_paid || data.is_asso)) {
+                    userStatus = 'premium';
+                } else {
+                    userStatus = 'gratuit';
+                }
+                if (data) {
+                    if (data.first_name) currentFirstName = data.first_name;
+                    if (data.last_name) currentLastName = data.last_name;
+                }
+            } catch(e) {
+                userStatus = 'gratuit';
+            }
+        }
+        function openAuthModal(mode) {
+            authMode = mode;
+            document.getElementById('auth-modal-title').textContent = mode === 'login' ? 'Connexion' : 'Inscription';
+            document.getElementById('modal-auth-email').value = '';
+            document.getElementById('modal-auth-password').value = '';
+            document.getElementById('modal-firstname').value = '';
+            document.getElementById('modal-lastname').value = '';
+            document.getElementById('modal-firstname').style.display = mode === 'register' ? 'block' : 'none';
+            document.getElementById('modal-lastname').style.display = mode === 'register' ? 'block' : 'none';
+            document.getElementById('auth-modal-overlay').style.display = 'flex';
+        }
+        function closeAuthModal() {
+            authMode = null;
+            document.getElementById('auth-modal-overlay').style.display = 'none';
+        }
+        function applyAuth() {
+            if (authMode === 'login') doLogin();
+            else if (authMode === 'register') doRegister();
+        }
+        function renderHeaderActions() {
+            const el = document.getElementById('header-actions');
+            if (!el) return;
+            el.innerHTML = '';
+            const identity = document.createElement('div');
+            identity.className = 'header-identity';
+            const nameText = (currentFirstName || currentLastName) ? `${currentFirstName} ${currentLastName}`.trim() : 'Invité';
+            identity.textContent = nameText;
+            el.appendChild(identity);
+            if (userStatus) {
+                const assoBtn = document.createElement('button');
+                assoBtn.className = 'header-btn';
+                assoBtn.textContent = 'Association';
+                assoBtn.title = 'Prouver que je suis une asso';
+                assoBtn.onclick = () => openAssoModal();
+                el.appendChild(assoBtn);
+                const logoutBtn = document.createElement('button');
+                logoutBtn.className = 'header-btn';
+                logoutBtn.textContent = 'Déconnexion';
+                logoutBtn.onclick = () => doLogout();
+                el.appendChild(logoutBtn);
+            } else {
+                const registerBtn = document.createElement('button');
+                registerBtn.className = 'header-btn';
+                registerBtn.textContent = 'Inscription';
+                registerBtn.onclick = () => openAuthModal('register');
+                const loginBtn = document.createElement('button');
+                loginBtn.className = 'header-btn';
+                loginBtn.textContent = 'Connexion';
+                loginBtn.onclick = () => openAuthModal('login');
+                el.appendChild(registerBtn);
+                el.appendChild(loginBtn);
+            }
+        }
+        async function ensureAssoBucket() {
+            try {
+                const { data: buckets } = await supabaseClient.storage.listBuckets?.();
+                const exists = Array.isArray(buckets) && buckets.some(b => b.name === 'justificatifs');
+                if (!exists && supabaseClient.storage.createBucket) {
+                    await supabaseClient.storage.createBucket('justificatifs', { public: true });
+                }
+            } catch(e) { /* no-op */ }
+        }
+        function openAssoModal() {
+            document.getElementById('asso-rna').value = '';
+            document.getElementById('asso-name').value = '';
+            const f = document.getElementById('asso-official-pdf');
+            if (f) f.value = '';
+            document.getElementById('asso-error').style.display = 'none';
+            document.getElementById('asso-modal-overlay').style.display = 'flex';
+        }
+        function closeAssoModal() {
+            document.getElementById('asso-modal-overlay').style.display = 'none';
+        }
+        function handleOfficialPdfChange(input) {
+            const file = input.files && input.files[0];
+            const cont = document.getElementById('asso-official-preview');
+            const nameEl = document.getElementById('asso-official-filename');
+            if (file) {
+                nameEl.textContent = file.name;
+                cont.style.display = 'flex';
+            } else {
+                nameEl.textContent = '';
+                cont.style.display = 'none';
+            }
+        }
+        function removeOfficialPdf() {
+            const input = document.getElementById('asso-official-pdf');
+            const cont = document.getElementById('asso-official-preview');
+            const nameEl = document.getElementById('asso-official-filename');
+            if (input) input.value = '';
+            nameEl.textContent = '';
+            cont.style.display = 'none';
+        }
+        function generateTicketNumber() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let out = '';
+            for (let i = 0; i < 8; i++) out += chars[Math.floor(Math.random() * chars.length)];
+            return out;
+        }
+        async function sendAssoProof() {
+            const rna = document.getElementById('asso-rna').value.trim();
+            const name = document.getElementById('asso-name').value.trim();
+            const officialFile = document.getElementById('asso-official-pdf').files[0];
+            const err = document.getElementById('asso-error');
+            if (!rna || !name || !officialFile) { err.style.display = 'block'; return; }
+            err.style.display = 'none';
+            try {
+                const { data: userData } = await supabaseClient.auth.getUser();
+                const userId = userData?.user?.id || null;
+                const { data: exist } = await supabaseClient
+                    .from('profiles')
+                    .select('id')
+                    .eq('asso_name', name)
+                    .eq('rna_number', rna)
+                    .maybeSingle();
+                if (exist && exist.id && exist.id !== userId) {
+                    alert("Cette association est déjà associée à un compte");
+                    return;
+                }
+            } catch(_e) {}
+            const ticket = generateTicketNumber();
+            const lastUpper = (currentLastName || '').toUpperCase();
+            const temp = document.createElement('div');
+            temp.style.padding = '40px';
+            temp.style.fontFamily = 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+            temp.style.color = '#2c3e50';
+            temp.innerHTML = `
+                <div style="font-size:22px; font-weight:700; margin-bottom:10px;">Demande d'accès prémium Association</div>
+                <div style="font-size:15px; margin:8px 0 16px 0; color:#34495e;">
+                    Bonjour ${currentFirstName} ${lastUpper}, merci d'avoir réalisé votre demande d'accès prémium pour votre association.
+                </div>
+                <div style="font-size:16px; font-weight:600; margin:6px 0 6px 0; color:#2c3e50;">
+                    Récapitulatif de la demande
+                </div>
+                <div style="font-size:16px; margin:10px 0;">N° RNA : ${rna}</div>
+                <div style="font-size:16px; margin:10px 0;">Nom de l'Association : ${name}</div>
+                <div style="font-size:16px; margin:10px 0;">N° de demande : ${ticket}</div>
+                <div style="margin-top:24px; padding-top:12px; border-top:1px solid #ddd; font-size:14px; color:#555;">
+                    Nos équipes vont procéder à la vérification de votre demande dans les plus brefs délais
+                </div>
+                <div style="margin-top:12px; font-size:12px; color:#7f8c8d; display:flex; justify-content:space-between;">
+                    <span>Organigramme Editor</span>
+                    <span>© Corentin BLERVACQUE</span>
+                </div>
+            `;
+            document.body.appendChild(temp);
+            const filename = `Demande_Association_${ticket}.pdf`;
+            const opt = { margin: 10, filename, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+            let blob = null;
+            try {
+                blob = await html2pdf().set(opt).from(temp).outputPdf('blob');
+            } catch(_) {
+                try {
+                    const pdf = await html2pdf().set(opt).from(temp).toPdf().get('pdf');
+                    blob = new Blob([pdf.output('arraybuffer')], { type: 'application/pdf' });
+                } catch(__) {}
+            }
+            document.body.removeChild(temp);
+            if (blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+            let publicUrl = '';
+            let officialUrl = '';
+            if (blob && supabaseClient) {
+                try {
+                    await ensureAssoBucket();
+                    const path = `ticket_${ticket}.pdf`;
+                    const { error: upErr } = await supabaseClient.storage.from('justificatifs').upload(path, blob, { contentType: 'application/pdf', upsert: true });
+                    if (!upErr) {
+                        const { data: pub } = supabaseClient.storage.from('justificatifs').getPublicUrl(path);
+                        publicUrl = pub?.publicUrl || '';
+                    }
+                } catch(e) { /* no-op */ }
+            }
+            if (officialFile && supabaseClient) {
+                try {
+                    const { data: buckets } = await supabaseClient.storage.listBuckets?.();
+                    const exists = Array.isArray(buckets) && buckets.some(b => b.name === 'Justificatif_officiel');
+                    if (!exists && supabaseClient.storage.createBucket) {
+                        await supabaseClient.storage.createBucket('Justificatif_officiel', { public: true });
+                    }
+                    const offName = `ticket_${ticket}.pdf`;
+                    const { error: offErr } = await supabaseClient.storage.from('Justificatif_officiel').upload(offName, officialFile, { contentType: 'application/pdf', upsert: true });
+                    if (!offErr) {
+                        const { data: offPub } = supabaseClient.storage.from('Justificatif_officiel').getPublicUrl(offName);
+                        officialUrl = offPub?.publicUrl || '';
+                    }
+                } catch(e) { /* no-op */ }
+            }
+            if (supabaseClient) {
+                try {
+                    const { data: userData } = await supabaseClient.auth.getUser();
+                    const userId = userData?.user?.id || null;
+                    if (userId) {
+                        await supabaseClient
+                            .from('profiles')
+                            .update({
+                                asso_name: name,
+                                rna_number: rna,
+                                ticket_number: ticket,
+                                document_url: publicUrl,
+                                Officiel_URL: officialUrl
+                            })
+                            .eq('id', userId);
+                    }
+                    await supabaseClient.from('asso_requests').insert({
+                        rna_number: rna,
+                        asso_name: name,
+                        justificatif_url: publicUrl,
+                        ticket_number: ticket,
+                        user_id: userId
+                    });
+                } catch(e) { /* no-op */ }
+            }
+            closeAssoModal();
+        }
+        function renderHeaderTools() {
+            const el = document.getElementById('header-tools');
+            if (!el) return;
+            el.innerHTML = '';
+            const btnPdf = document.createElement('button');
+            btnPdf.className = 'tool-btn';
+            btnPdf.textContent = 'PDF';
+            btnPdf.onclick = () => exportPDF();
+            const btnSave = document.createElement('button');
+            btnSave.className = 'tool-btn';
+            btnSave.textContent = 'Enregistrer';
+            btnSave.onclick = () => saveOrganigram();
+            const btnOpen = document.createElement('button');
+            btnOpen.className = 'tool-btn';
+            btnOpen.textContent = 'Ouvrir';
+            btnOpen.onclick = () => openOrganigram();
+            const btnNew = document.createElement('button');
+            btnNew.className = 'tool-btn';
+            btnNew.textContent = 'Nouveau';
+            btnNew.onclick = () => newOrganigram();
+            el.appendChild(btnPdf);
+            el.appendChild(btnSave);
+            el.appendChild(btnOpen);
+            el.appendChild(btnNew);
         }
 
         function updateLogoPosition(pos) {
@@ -916,6 +1431,10 @@
             // Hide delete buttons
             const deleteBtns = element.querySelectorAll('.delete-btn, .delete-line-btn');
             deleteBtns.forEach(btn => btn.style.display = 'none');
+            
+            // Hide account badges during export
+            const badges = element.querySelectorAll('.account-badge');
+            badges.forEach(b => b.style.display = 'none');
 
             const opt = {
                 margin: 10,
@@ -933,6 +1452,9 @@
                 
                 // Restore buttons (reset inline style to let CSS hover work)
                 deleteBtns.forEach(btn => btn.style.display = '');
+                
+                // Restore badges
+                badges.forEach(b => b.style.display = '');
 
                 // Hide title again
                 if(title) title.style.display = 'none';
@@ -1048,6 +1570,12 @@
             }
 
             container.appendChild(headerContainer);
+            if (userStatus === 'gratuit' || userStatus === 'premium') {
+                const badge = document.createElement('div');
+                badge.className = 'account-badge ' + (userStatus === 'premium' ? 'badge-premium' : 'badge-free');
+                badge.textContent = userStatus === 'premium' ? '⭐ Prémium' : 'Gratuit';
+                headerContainer.appendChild(badge);
+            }
 
             // Render Sections
             if (data.sections.length === 0) {
@@ -1231,10 +1759,12 @@
                 container.appendChild(rightEl);
             }
 
-            const watermark = document.createElement('div');
-            watermark.className = 'watermark';
-            watermark.textContent = '© Corentin BLERVACQUE';
-            container.appendChild(watermark);
+            if (userStatus !== 'premium') {
+                const watermark = document.createElement('div');
+                watermark.className = 'watermark';
+                watermark.innerHTML = 'Corentin BLERVACQUE<br/>free version';
+                container.appendChild(watermark);
+            }
         }
 
         // Run
