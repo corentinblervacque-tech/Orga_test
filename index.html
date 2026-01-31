@@ -709,6 +709,7 @@
         const SUPABASE_KEY = 'sb_publishable_NJ7hWqf9XlhnyinZHWBkaA_8aywC_iC';
         let currentFirstName = '';
         let currentLastName = '';
+        let orgCount = 0;
 
         // Initialize
         function init() {
@@ -915,7 +916,7 @@
             try {
                 const { data, error } = await supabaseClient
                     .from('profiles')
-                    .select('is_paid, is_asso, first_name, last_name')
+                    .select('is_paid, is_asso, first_name, last_name, org_count')
                     .eq('id', userId)
                     .maybeSingle();
                 if (data && (data.is_paid || data.is_asso)) {
@@ -926,6 +927,7 @@
                 if (data) {
                     if (data.first_name) currentFirstName = data.first_name;
                     if (data.last_name) currentLastName = data.last_name;
+                    orgCount = Number(data.org_count || 0);
                 }
             } catch(e) {
                 userStatus = 'gratuit';
@@ -1160,7 +1162,7 @@
             el.innerHTML = '';
             const btnPdf = document.createElement('button');
             btnPdf.className = 'tool-btn';
-            btnPdf.textContent = 'PDF';
+            btnPdf.textContent = 'Générer un PDF';
             btnPdf.onclick = () => exportPDF();
             const btnSave = document.createElement('button');
             btnSave.className = 'tool-btn';
@@ -1414,28 +1416,24 @@
             render();
         }
 
-        function exportPDF() {
+        async function exportPDF() {
             const element = document.getElementById('chart-container');
-            
-            // Show title temporarily
             const title = element.querySelector('.export-title');
             if(title) title.style.display = 'block';
-
-            // Temporarily modify styles to ensure full capture (fix cut-off)
             const originalOverflow = element.style.overflow;
             const originalHeight = element.style.height;
-            
-            element.style.overflow = 'visible'; // Allow full expansion
-            element.style.height = 'auto';      // Remove height limit
-
-            // Hide delete buttons
+            element.style.overflow = 'visible';
+            element.style.height = 'auto';
             const deleteBtns = element.querySelectorAll('.delete-btn, .delete-line-btn');
             deleteBtns.forEach(btn => btn.style.display = 'none');
-            
-            // Hide account badges during export
             const badges = element.querySelectorAll('.account-badge');
             badges.forEach(b => b.style.display = 'none');
-
+            const quotaTexts = element.querySelectorAll('.free-quota-text');
+            const premiumHints = element.querySelectorAll('.premium-hint-text');
+            const quotaDisplays = [];
+            const premiumDisplays = [];
+            quotaTexts.forEach((q, i) => { quotaDisplays[i] = q.style.display; q.style.display = 'none'; });
+            premiumHints.forEach((p, i) => { premiumDisplays[i] = p.style.display; p.style.display = 'none'; });
             const opt = {
                 margin: 10,
                 filename: 'Mon Organigramme.pdf',
@@ -1443,22 +1441,54 @@
                 html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
             };
-
-            // New Promise-based usage:
-            html2pdf().set(opt).from(element).save().then(() => {
-                // Restore styles
-                element.style.overflow = originalOverflow;
-                element.style.height = originalHeight;
-                
-                // Restore buttons (reset inline style to let CSS hover work)
-                deleteBtns.forEach(btn => btn.style.display = '');
-                
-                // Restore badges
-                badges.forEach(b => b.style.display = '');
-
-                // Hide title again
-                if(title) title.style.display = 'none';
-            });
+            const wm = element.querySelector('.watermark');
+            const wmDisplay = wm ? wm.style.display : null;
+            let allowNoWatermark = false;
+            if (supabaseClient) {
+                const { data } = await supabaseClient.auth.getUser();
+                const user = data?.user || null;
+                const isFirstFree = user && userStatus === 'gratuit' && Number(orgCount || 0) < 1;
+                if (isFirstFree) {
+                    const ok = window.confirm('Êtes-vous sûr de vouloir générer votre organigramme gratuit ?');
+                    if (!ok) {
+                        element.style.overflow = originalOverflow;
+                        element.style.height = originalHeight;
+                        deleteBtns.forEach(btn => btn.style.display = '');
+                        badges.forEach(b => b.style.display = '');
+                        quotaTexts.forEach((q, i) => { q.style.display = quotaDisplays[i] === undefined ? '' : quotaDisplays[i]; });
+                        premiumHints.forEach((p, i) => { p.style.display = premiumDisplays[i] === undefined ? '' : premiumDisplays[i]; });
+                        if(title) title.style.display = 'none';
+                        return;
+                    }
+                    try {
+                        const newCount = 1;
+                        const { error: updErr } = await supabaseClient
+                            .from('profiles')
+                            .update({ org_count: newCount })
+                            .eq('id', user.id);
+                        if (updErr) {
+                            await supabaseClient
+                                .from('profiles')
+                                .upsert({ id: user.id, org_count: newCount });
+                        }
+                        orgCount = newCount;
+                        quotaTexts.forEach(q => { q.textContent = 'Il vous reste 0/1 organigramme gratuit'; });
+                        allowNoWatermark = true;
+                        if (wm) wm.style.display = 'none';
+                    } catch(_) {}
+                } else if (userStatus !== 'premium' && wm) {
+                    // keep watermark for subsequent exports
+                }
+            }
+            await html2pdf().set(opt).from(element).save();
+            element.style.overflow = originalOverflow;
+            element.style.height = originalHeight;
+            deleteBtns.forEach(btn => btn.style.display = '');
+            badges.forEach(b => b.style.display = '');
+            quotaTexts.forEach((q, i) => { q.style.display = quotaDisplays[i] === undefined ? '' : quotaDisplays[i]; });
+            premiumHints.forEach((p, i) => { p.style.display = premiumDisplays[i] === undefined ? '' : premiumDisplays[i]; });
+            if(title) title.style.display = 'none';
+            if (wm) wm.style.display = wmDisplay === null ? '' : wmDisplay;
         }
 
         // --- Rendering ---
@@ -1570,10 +1600,43 @@
             }
 
             container.appendChild(headerContainer);
+            if (userStatus === 'gratuit') {
+                const remaining = Math.max(0, 1 - Number(orgCount || 0));
+                const topRight = document.createElement('div');
+                topRight.style.position = 'absolute';
+                topRight.style.top = '0';
+                topRight.style.right = '10px';
+                topRight.style.display = 'flex';
+                topRight.style.flexDirection = 'column';
+                topRight.style.alignItems = 'flex-end';
+                const quotaText = document.createElement('div');
+                quotaText.className = 'free-quota-text';
+                quotaText.textContent = `Il vous reste ${remaining}/1 organigramme gratuit`;
+                quotaText.style.fontSize = '0.9rem';
+                quotaText.style.color = '#2c3e50';
+                quotaText.style.fontWeight = '600';
+                quotaText.style.marginTop = '2px';
+                quotaText.style.marginBottom = '4px';
+                topRight.appendChild(quotaText);
+                if (Number(orgCount || 0) >= 1) {
+                    const premiumHint = document.createElement('div');
+                    premiumHint.className = 'premium-hint-text';
+                    premiumHint.textContent = 'Passez en premium pour avoir des organigrammes illimités';
+                    premiumHint.style.fontSize = '0.85rem';
+                    premiumHint.style.color = '#2c3e50';
+                    premiumHint.style.opacity = '0.85';
+                    premiumHint.style.marginBottom = '4px';
+                    topRight.appendChild(premiumHint);
+                }
+                headerContainer.appendChild(topRight);
+            }
             if (userStatus === 'gratuit' || userStatus === 'premium') {
                 const badge = document.createElement('div');
                 badge.className = 'account-badge ' + (userStatus === 'premium' ? 'badge-premium' : 'badge-free');
                 badge.textContent = userStatus === 'premium' ? '⭐ Prémium' : 'Gratuit';
+                if (userStatus === 'gratuit') {
+                    badge.style.top = '68px';
+                }
                 headerContainer.appendChild(badge);
             }
 
@@ -1759,7 +1822,9 @@
                 container.appendChild(rightEl);
             }
 
-            if (userStatus !== 'premium') {
+            const showGuestWatermark = !userStatus; // not logged in
+            const showFreeWatermark = userStatus === 'gratuit' && Number(orgCount || 0) >= 1;
+            if (showGuestWatermark || showFreeWatermark) {
                 const watermark = document.createElement('div');
                 watermark.className = 'watermark';
                 watermark.innerHTML = 'Corentin BLERVACQUE<br/>free version';
