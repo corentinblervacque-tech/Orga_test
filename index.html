@@ -260,6 +260,44 @@
             padding: 20px;
         }
 
+        /* Color Picker UI */
+        .color-picker-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        .color-picker-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .color-label {
+            font-size: 0.85rem;
+            color: #2c3e50;
+            font-weight: 600;
+            flex: 1;
+        }
+        .color-preview-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            flex-shrink: 0;
+        }
+        .color-preview-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
         /* Member Card */
         .member-card {
             background: white;
@@ -567,7 +605,7 @@
              background: white;
              box-shadow: 0 0 20px rgba(0,0,0,0.3);
              padding: 40px;
-             min-width: 297mm;
+             width: 297mm;
              min-height: 210mm;
              box-sizing: border-box;
              position: relative;
@@ -632,9 +670,9 @@
             <div class="control-group">
                 <div class="control-title">🔍 Taille des étiquettes</div>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <button class="secondary" onclick="stepScale(-0.1)" style="width: auto; padding: 8px 12px; font-weight: bold;">-</button>
-                    <input type="range" id="input-card-scale" min="0.5" max="1.5" step="0.1" value="1" oninput="updateCardScale(this.value)" style="flex: 1; margin: 0; cursor: pointer;">
-                    <button class="secondary" onclick="stepScale(0.1)" style="width: auto; padding: 8px 12px; font-weight: bold;">+</button>
+                    <button class="secondary" onclick="stepScale(-0.05)" style="width: auto; padding: 8px 12px; font-weight: bold;">-</button>
+                    <input type="range" id="input-card-scale" min="0.5" max="1.5" step="0.05" value="1" oninput="updateCardScale(this.value)" style="flex: 1; margin: 0; cursor: pointer;">
+                    <button class="secondary" onclick="stepScale(0.05)" style="width: auto; padding: 8px 12px; font-weight: bold;">+</button>
                 </div>
                 <div style="text-align: center; margin-top: 5px; font-size: 0.85rem; color: #666;">
                     Zoom: <span id="scale-value-display">100%</span>
@@ -648,13 +686,28 @@
                 <label style="font-size: 0.9rem; color:#666;">Nom du Club :</label>
                 <input type="text" id="input-club-name" value="Mon Organigramme" oninput="updateClubName(this.value)" placeholder="Nom du club" />
 
-                <label style="font-size: 0.9rem; color:#666;">Couleurs :</label>
-                <div class="color-row">
-                    <input type="color" id="input-color" value="#2ecc71" onchange="updateThemeColor(this.value)" style="height:28px; width:36px; cursor:pointer;" title="Couleur principale" />
-                    <span style="font-size:0.85rem; color:#666;">Titre club</span>
-                    <input type="color" id="input-chart-title-color" value="#1a472a" onchange="updateChartTitleColor(this.value)" style="height:28px; width:36px; cursor:pointer;" title="Couleur du titre club" />
-                    <span style="font-size:0.85rem; color:#666;">Titre section</span>
-                    <input type="color" id="input-section-title-color" value="#2ecc71" onchange="updateSectionTitleColor(this.value)" style="height:28px; width:36px; cursor:pointer;" title="Couleur du titre section" />
+                <label style="font-size: 0.9rem; color:#666; margin-bottom: 5px; display:block;">Couleurs de l'organigramme :</label>
+                <div class="color-picker-group">
+                    <!-- Main Color -->
+                    <div class="color-picker-item">
+                        <span class="color-label">Bordures & Accents</span>
+                        <div id="preview-color-main" class="color-preview-btn" style="background:#2ecc71;" onclick="document.getElementById('input-color').click()" title="Modifier la couleur"></div>
+                        <input type="color" id="input-color" value="#2ecc71" onchange="updateThemeColor(this.value)" style="display:none;" />
+                    </div>
+                    
+                    <!-- Chart Title Color -->
+                    <div class="color-picker-item">
+                        <span class="color-label">Titre Principal</span>
+                        <div id="preview-color-chart" class="color-preview-btn" style="background:#1a472a;" onclick="document.getElementById('input-chart-title-color').click()" title="Modifier la couleur"></div>
+                        <input type="color" id="input-chart-title-color" value="#1a472a" onchange="updateChartTitleColor(this.value)" style="display:none;" />
+                    </div>
+
+                    <!-- Section Title Color -->
+                    <div class="color-picker-item">
+                        <span class="color-label">Titres des Sections</span>
+                        <div id="preview-color-section" class="color-preview-btn" style="background:#2ecc71;" onclick="document.getElementById('input-section-title-color').click()" title="Modifier la couleur"></div>
+                        <input type="color" id="input-section-title-color" value="#2ecc71" onchange="updateSectionTitleColor(this.value)" style="display:none;" />
+                    </div>
                 </div>
 
                 <label style="font-size: 0.9rem; color:#666;">Logo prédéfini :</label>
@@ -871,6 +924,8 @@
             root.style.setProperty('--primary-green', hex);
             root.style.setProperty('--dark-green', adjustColor(hex, -20));
             root.style.setProperty('--court-green', adjustColor(hex, -40));
+            const preview = document.getElementById('preview-color-main');
+            if(preview) preview.style.background = hex;
         }
 
         function adjustColor(color, amount) {
@@ -880,11 +935,15 @@
             const root = document.documentElement;
             root.style.setProperty('--chart-title-color', hex);
             renderChart();
+            const preview = document.getElementById('preview-color-chart');
+            if(preview) preview.style.background = hex;
         }
         function updateSectionTitleColor(hex) {
             const root = document.documentElement;
             root.style.setProperty('--section-title-bg', hex);
             renderChart();
+            const preview = document.getElementById('preview-color-section');
+            if(preview) preview.style.background = hex;
         }
 
         function updatePresetLogo(key) {
@@ -1378,6 +1437,7 @@
             let newVal = parseFloat(input.value) + delta;
             // Clamp value
             newVal = Math.max(parseFloat(input.min), Math.min(parseFloat(input.max), newVal));
+            newVal = Math.round(newVal * 100) / 100; // Round to 2 decimals
             input.value = newVal;
             updateCardScale(newVal);
         }
@@ -1612,10 +1672,19 @@
             if(title) title.style.display = 'block';
             const originalOverflow = element.style.overflow;
             const originalHeight = element.style.height;
+            const originalWidth = element.style.width;
+            const originalPadding = element.style.padding;
+            const originalBoxSizing = element.style.boxSizing;
+
             element.style.overflow = 'visible';
             element.style.height = 'auto';
-            const deleteBtns = element.querySelectorAll('.delete-btn, .delete-line-btn');
-            deleteBtns.forEach(btn => btn.style.display = 'none');
+            element.style.width = '297mm';
+            element.style.padding = '40px';
+            element.style.boxSizing = 'border-box';
+
+            const deleteBtns = element.querySelectorAll('.delete-btn, .delete-line-btn, .member-actions, .preview-btn-container');
+            const deleteDisplays = [];
+            deleteBtns.forEach((btn, i) => { deleteDisplays[i] = btn.style.display; btn.style.display = 'none'; });
             const badges = element.querySelectorAll('.account-badge');
             badges.forEach(b => b.style.display = 'none');
             const quotaTexts = element.querySelectorAll('.free-quota-text');
@@ -1625,7 +1694,7 @@
             quotaTexts.forEach((q, i) => { quotaDisplays[i] = q.style.display; q.style.display = 'none'; });
             premiumHints.forEach((p, i) => { premiumDisplays[i] = p.style.display; p.style.display = 'none'; });
             const opt = {
-                margin: 10,
+                margin: 0,
                 filename: 'Mon Organigramme.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
@@ -1643,7 +1712,10 @@
                     if (!ok) {
                         element.style.overflow = originalOverflow;
                         element.style.height = originalHeight;
-                        deleteBtns.forEach(btn => btn.style.display = '');
+                        element.style.width = originalWidth;
+                        element.style.padding = originalPadding;
+                        element.style.boxSizing = originalBoxSizing;
+                        deleteBtns.forEach((btn, i) => btn.style.display = deleteDisplays[i] === undefined ? '' : deleteDisplays[i]);
                         badges.forEach(b => b.style.display = '');
                         quotaTexts.forEach((q, i) => { q.style.display = quotaDisplays[i] === undefined ? '' : quotaDisplays[i]; });
                         premiumHints.forEach((p, i) => { p.style.display = premiumDisplays[i] === undefined ? '' : premiumDisplays[i]; });
@@ -1673,7 +1745,10 @@
             await html2pdf().set(opt).from(element).save();
             element.style.overflow = originalOverflow;
             element.style.height = originalHeight;
-            deleteBtns.forEach(btn => btn.style.display = '');
+            element.style.width = originalWidth;
+            element.style.padding = originalPadding;
+            element.style.boxSizing = originalBoxSizing;
+            deleteBtns.forEach((btn, i) => btn.style.display = deleteDisplays[i] === undefined ? '' : deleteDisplays[i]);
             badges.forEach(b => b.style.display = '');
             quotaTexts.forEach((q, i) => { q.style.display = quotaDisplays[i] === undefined ? '' : quotaDisplays[i]; });
             premiumHints.forEach((p, i) => { p.style.display = premiumDisplays[i] === undefined ? '' : premiumDisplays[i]; });
